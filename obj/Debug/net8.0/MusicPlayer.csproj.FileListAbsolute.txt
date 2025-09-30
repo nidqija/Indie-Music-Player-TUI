@@ -12,3 +12,11 @@ C:\Users\User\source\repos\MusicPlayer\MusicPlayer\obj\Debug\net8.0\refint\Music
 C:\Users\User\source\repos\MusicPlayer\MusicPlayer\obj\Debug\net8.0\MusicPlayer.pdb
 C:\Users\User\source\repos\MusicPlayer\MusicPlayer\obj\Debug\net8.0\MusicPlayer.genruntimeconfig.cache
 C:\Users\User\source\repos\MusicPlayer\MusicPlayer\obj\Debug\net8.0\ref\MusicPlayer.dll
+C:\Users\User\source\repos\MusicPlayer\MusicPlayer\bin\Debug\net8.0\DotNetEnv.dll
+C:\Users\User\source\repos\MusicPlayer\MusicPlayer\bin\Debug\net8.0\Microsoft.Extensions.Configuration.dll
+C:\Users\User\source\repos\MusicPlayer\MusicPlayer\bin\Debug\net8.0\Microsoft.Extensions.Configuration.Abstractions.dll
+C:\Users\User\source\repos\MusicPlayer\MusicPlayer\bin\Debug\net8.0\Microsoft.Extensions.Primitives.dll
+C:\Users\User\source\repos\MusicPlayer\MusicPlayer\bin\Debug\net8.0\Sprache.dll
+C:\Users\User\source\repos\MusicPlayer\MusicPlayer\obj\Debug\net8.0\MusicPlayer.csproj.AssemblyReference.cache
+C:\Users\User\source\repos\MusicPlayer\MusicPlayer\obj\Debug\net8.0\MusicPlayer.sourcelink.json
+C:\Users\User\source\repos\MusicPlayer\MusicPlayer\obj\Debug\net8.0\MusicPla.163160C2.Up2Date
