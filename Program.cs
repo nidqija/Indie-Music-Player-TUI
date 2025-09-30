@@ -55,8 +55,45 @@ class Songs
         return songName;
     }
 
+    public async Task searchSong()
+    {
+        Console.WriteLine("Searching for the song: " + getSongName());
+        Env.Load(@"C:\Users\User\source\repos\MusicPlayer\MusicPlayer\.env");
+        string client = Environment.GetEnvironmentVariable("JAMENDO_CLIENT_ID");
+
+        using var httpClient = new HttpClient();
+        string url = $"https://api.jamendo.com/v3.0/tracks/?client_id={client}&format=json&limit=5&search={getSongName()}";
+
+        string  response = await httpClient.GetStringAsync(url);
+
+        using JsonDocument doc = JsonDocument.Parse(response);
+
+        JsonElement root = doc.RootElement.GetProperty("results");
+
+        Console.WriteLine("Top 5 results: ");
+        foreach (JsonElement track in root.EnumerateArray())
+        {   
+            string name = track.GetProperty("name").GetString();
+            string artist = track.GetProperty("artist_name").GetString();
+            Console.WriteLine("================================");
+            Console.WriteLine($"{ name}" + " by: " + $"{ artist}");
+
+        } if (root.GetArrayLength() == 0)
+        {
+            Console.WriteLine("No results found for the song: " + getSongName());
+        }
+
+
+
+
+
+    }
 
    
+
+
+
+
 }
 
 // class to handle environment variables
@@ -72,15 +109,7 @@ class EnvFile
         string client = Environment.GetEnvironmentVariable("JAMENDO_CLIENT_ID");
 
 
-        if (string.IsNullOrEmpty(client))
-        {
-            Console.WriteLine("JAMENDO_CLIENT_ID is not set in the environment variables.");
-        }
-        else
-        {
-            Console.WriteLine($"Your jamendo client id is: {client}");
-
-        }
+        
     }
 
    
@@ -98,7 +127,7 @@ class MusicInput
     string intro = "Welcome to MusicInput Station!";
     string input;
 
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         MusicInput musicInput = new MusicInput();
         musicInput.input = "Hello from MusicInput";
@@ -116,7 +145,13 @@ class MusicInput
         
         if(musicChoices.returnChoice() == "1")
         {
-            Console.WriteLine("You chose to search songs.");
+            Console.WriteLine("Enter your song name: ");
+            string songInput = Console.ReadLine();
+            Songs songs = new Songs();
+            songs.setSongName(songInput);
+            Console.WriteLine("Submitted! Wait for a while...");
+            await songs.searchSong();
+
         }
         else if (musicChoices.returnChoice() == "2")
         {
