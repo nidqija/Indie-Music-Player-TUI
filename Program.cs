@@ -13,7 +13,7 @@ using System.Net;
 // class to display menu choices
 class MusicChoices
 {
-    private string[] menuChoices = { "1. Search Songsss", "2. Playlists", "3. Search by Artists" };
+    private string[] menuChoices = { "1. Search Songs", "2. Playlists", "3. Search by Artists" };
     private string choice;
     
     
@@ -105,11 +105,6 @@ class Songs
                 songlists.Add(new Songs { Name = name, Artist = artist , Url=audioUrl});
                 index++;
 
-
-
-
-
-
             }
 
             Console.WriteLine("\n");
@@ -120,20 +115,7 @@ class Songs
              );
 
 
-
-
-
-
         }
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -145,11 +127,50 @@ class Songs
     }
 
 
-   
+}
 
 
+class Playlist
+{
+    private string newPlaylist;
+    private string[] yesNo = { "Yes", "No" };
+    private int totalPlaylist;
+    private string songinsertiontoList;
+    
+
+   public Playlist(List<Songs> song)
+    {
+        totalPlaylist = song.Count;
+    
+        if (song.Count == 0)
+        {
+            Console.WriteLine("You have " + totalPlaylist + " songs in your playlist.");
+            Console.WriteLine("\n");
+            newPlaylist = AnsiConsole.Prompt(new SelectionPrompt<string>().Title("[red]Your playlist is empty! Want to create a new one?[/]")
+                .AddChoices(yesNo));
 
 
+            if(newPlaylist == "Yes")
+            {
+                createPlayList();
+            } 
+            else if (newPlaylist == "No")
+            {
+                Console.WriteLine("Exiting the program. Goodbye!");
+                Environment.Exit(0);
+            }
+            
+        }
+    }
+
+    
+    public void createPlayList()
+    {
+        songinsertiontoList = AnsiConsole.Prompt(
+            new TextPrompt<string>("[green]Add your songs: [/] ")
+            );
+    }
+    
 }
 
 class PlaySongs
@@ -165,7 +186,7 @@ class PlaySongs
     public void playSong(Songs song)
     {
         using (var webClient = new WebClient())
-        {`
+        {
             string tempFile = Path.GetTempFileName() + ".mp3";
             webClient.DownloadFile(song.Url, tempFile);
 
@@ -200,14 +221,10 @@ class EnvFile
 
         string client = Environment.GetEnvironmentVariable("JAMENDO_CLIENT_ID");
 
-
-        
     }
 
    
 }
-
-
 
 
 
@@ -267,10 +284,12 @@ class MusicInput
                 playsong.playSong(songs.returnPlaySongs());
 
 
-                    break;
+                break;
 
             case "2. Playlists":
                 Console.WriteLine("You chose to view playlists");
+                List<Songs> mySongs = new List<Songs>();
+                Playlist playlist = new Playlist(mySongs);
                 break;
 
             case "3. Search by Artists":
@@ -282,10 +301,7 @@ class MusicInput
                 break;
 
 
-
         }
-
-
 
 
     }
