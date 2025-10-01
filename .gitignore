@@ -1,0 +1,19 @@
+﻿# Visual Studio / C# defaults
+bin/
+obj/
+*.user
+*.suo
+*.dll
+*.exe
+
+# Rider / JetBrains
+.idea/
+
+# VS Code
+.vscode/
+
+# Environment files
+.env
+
+# Logs
+*.log
