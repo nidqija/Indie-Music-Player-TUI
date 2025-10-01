@@ -17,6 +17,7 @@ class MusicChoices
     
    public void printChoices()
     {
+        // using Spectre.Console to display menu choices
         choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
             .Title("[yellow]Please select an option:[/]")
@@ -81,6 +82,7 @@ class Songs
         Console.WriteLine("Top 5 results: ");
         int index = 1;
         List<Songs> songlists = new List<Songs>();
+
         foreach (JsonElement track in root.EnumerateArray())
         {   
             string name = track.GetProperty("name").GetString();
@@ -89,12 +91,23 @@ class Songs
             Console.WriteLine($"{ name}" + " by: " + $"{ artist}");
             songlists.Add(new Songs { Name = name , Artist = artist});
             index++;
+            Console.WriteLine("\n");
+            var songNameChoice = AnsiConsole.Prompt(
+            new SelectionPrompt<Songs>().Title("[yellow]Enter your choice of song to play:[/]")
+             .UseConverter(songname => $"{songname.Name} by {songname.Artist}")
+             .AddChoices(songlists)
+             );
 
         }
+
+
         if (root.GetArrayLength() == 0)
         {
             Console.WriteLine("No results found for the song: " + getSongName());
         }
+       
+
+
 
 
 
@@ -113,16 +126,15 @@ class Songs
 
 class PlaySongs
 {
-
+   
 }
 
-// class to handle environment variables
 class EnvFile
 {
     public static void doEnvOps(string[] args)
     {
-        // telling the env variable where is the exact path of the .env file
-        // do this if the .env file is not detected automatically
+ // ================= telling the env variable where is the exact path of the .env file =======================//
+ // do this if the .env file is not detected automatically
 
         Env.Load(@"C:\Users\User\source\repos\MusicPlayer\MusicPlayer\.env");
 
@@ -151,11 +163,19 @@ class MusicInput
 
     static async Task Main(string[] args)
     {
+
+//====================== using Spectre.Console to display title ===========================//
+
+
+        var fontPath = Path.Combine("fonts", "alligator2.flf");
+        var font = FigletFont.Load(fontPath);
+
         AnsiConsole.Write(
-            new FigletText("MusicInput Station!")
-            .Centered().Color(Color.Purple)
+            new FigletText(font,"MusicInput Station!")
+            .Centered().Color(Color.Yellow)
             );
         MusicInput musicInput = new MusicInput();
+        Console.WriteLine("\n");
         musicInput.input = "Choose your options!";
         Console.WriteLine(musicInput.input);
 
@@ -166,35 +186,37 @@ class MusicInput
         // handle env file operations
         EnvFile.doEnvOps(args);
 
-        musicChoices.getChoice();
-        
-        if(musicChoices.returnChoice() == "1")
+//============================ get user choice and handles it =================================//
+
+        var choice = musicChoices.returnChoice();
+
+        switch (choice)
         {
-            Console.WriteLine("Enter your song name: ");
-            string songInput = Console.ReadLine();
-            Songs songs = new Songs();
-            songs.setSongName(songInput);
-            Console.WriteLine("Submitted! Wait for a while...");
-            await songs.searchSong();
+            case "1. Search Songs":
+                Console.WriteLine("Enter your song name: ");
+                string songInput = Console.ReadLine();
+                Songs songs = new Songs();
+                songs.setSongName(songInput);
+                Console.WriteLine("Submitted! Wait for a while...");
+                await songs.searchSong();
+                
+                break;
+
+            case "2. Playlists":
+                Console.WriteLine("You chose to view playlists");
+                break;
+
+            case "3. Search by Artists":
+                Console.WriteLine("You chose to search by artists");
+                break;
+
+            default:
+                Console.WriteLine("Invalid choice. Please try again.");
+                break;
+
+
 
         }
-        else if (musicChoices.returnChoice() == "2")
-        {
-            Console.WriteLine("You chose to view playlists");
-        }
-        else if (musicChoices.returnChoice() == "3")
-        {
-            Console.WriteLine("You chose to search by artists");
-        }
-
-        else
-        {
-            Console.WriteLine("Invalid choice. Please try again.");
-        }
-
-
-       
-
 
 
     }

@@ -17,6 +17,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="fonts\alligator2.flf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="fonts\alligator2.flf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="C:\Users\User\source\repos\MusicPlayer\MusicPlayer\.editorconfig" />
   </ItemGroup>
 
