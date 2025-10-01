@@ -13,7 +13,7 @@ using System.Net;
 // class to display menu choices
 class MusicChoices
 {
-    private string[] menuChoices = { "1. Search Songs", "2. Playlists", "3. Search by Artists" };
+    private string[] menuChoices = { "1. Search Songsss", "2. Playlists", "3. Search by Artists" };
     private string choice;
     
     
