@@ -49,6 +49,7 @@ class MusicChoices
 class Songs
 {
     private string songName;
+    private Songs songNameChoice;
 
     public void setSongName(string song)
     {
@@ -91,20 +92,28 @@ class Songs
             Console.WriteLine($"{ name}" + " by: " + $"{ artist}");
             songlists.Add(new Songs { Name = name , Artist = artist});
             index++;
-            Console.WriteLine("\n");
-            var songNameChoice = AnsiConsole.Prompt(
-            new SelectionPrompt<Songs>().Title("[yellow]Enter your choice of song to play:[/]")
-             .UseConverter(songname => $"{songname.Name} by {songname.Artist}")
-             .AddChoices(songlists)
-             );
+
+
+
+
+            
 
         }
+
+        Console.WriteLine("\n");
+        songNameChoice = AnsiConsole.Prompt(
+        new SelectionPrompt<Songs>().Title("[yellow]Enter your choice of song to play:[/]")
+         .UseConverter(songname => $"{songname.Name} by {songname.Artist}")
+         .AddChoices(songlists)
+         );
 
 
         if (root.GetArrayLength() == 0)
         {
             Console.WriteLine("No results found for the song: " + getSongName());
         }
+
+
        
 
 
@@ -114,6 +123,12 @@ class Songs
 
 
 
+    }
+
+
+    public Songs returnPlaySongs()
+    {
+        return songNameChoice;
     }
 
 
@@ -183,6 +198,9 @@ class MusicInput
         MusicChoices musicChoices = new MusicChoices();
         musicChoices.printChoices();
 
+
+        
+
         // handle env file operations
         EnvFile.doEnvOps(args);
 
@@ -199,8 +217,18 @@ class MusicInput
                 songs.setSongName(songInput);
                 Console.WriteLine("Submitted! Wait for a while...");
                 await songs.searchSong();
-                
-                break;
+
+                var playsong = songs.returnPlaySongs();
+
+                if(playsong != null)
+                {
+                    Console.WriteLine("You chose to play: " + playsong.Name + " by " + playsong.Artist);
+                } else
+                {
+                    Console.WriteLine("No song selected to play.");
+                }
+
+                    break;
 
             case "2. Playlists":
                 Console.WriteLine("You chose to view playlists");
@@ -219,7 +247,11 @@ class MusicInput
         }
 
 
+
+
     }
+
+    
 }
 
 
