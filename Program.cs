@@ -6,7 +6,7 @@ using System.Reflection.Metadata;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DotNetEnv;
-
+using Spectre.Console;
 
 // class to display menu choices
 class MusicChoices
@@ -17,10 +17,12 @@ class MusicChoices
     
    public void printChoices()
     {
-        for (int i = 0; i < menuChoices.Length; i++)
-        {
-            Console.WriteLine(menuChoices[i]);
-        }
+        choice = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+            .Title("[yellow]Please select an option:[/]")
+            .AddChoices(menuChoices)
+        );
+
     }
 
 
@@ -41,6 +43,8 @@ class MusicChoices
 }
 
 
+
+
 class Songs
 {
     private string songName;
@@ -54,6 +58,10 @@ class Songs
     {
         return songName;
     }
+
+    public string Name { get; set; }
+    public string Artist { get; set; }
+    public string Url { get; set; }
 
     public async Task searchSong()
     {
@@ -71,14 +79,19 @@ class Songs
         JsonElement root = doc.RootElement.GetProperty("results");
 
         Console.WriteLine("Top 5 results: ");
+        int index = 1;
+        List<Songs> songlists = new List<Songs>();
         foreach (JsonElement track in root.EnumerateArray())
         {   
             string name = track.GetProperty("name").GetString();
             string artist = track.GetProperty("artist_name").GetString();
             Console.WriteLine("================================");
             Console.WriteLine($"{ name}" + " by: " + $"{ artist}");
+            songlists.Add(new Songs { Name = name , Artist = artist});
+            index++;
 
-        } if (root.GetArrayLength() == 0)
+        }
+        if (root.GetArrayLength() == 0)
         {
             Console.WriteLine("No results found for the song: " + getSongName());
         }
@@ -87,12 +100,19 @@ class Songs
 
 
 
+
     }
+
 
    
 
 
 
+
+}
+
+class PlaySongs
+{
 
 }
 
@@ -122,16 +142,21 @@ class EnvFile
 // main class
 
 class MusicInput
-{
+{   
    
-    string intro = "Welcome to MusicInput Station!";
+  
     string input;
+    string intro = "Welcome to MusicInput Station!";
+
 
     static async Task Main(string[] args)
     {
+        AnsiConsole.Write(
+            new FigletText("MusicInput Station!")
+            .Centered().Color(Color.Purple)
+            );
         MusicInput musicInput = new MusicInput();
-        musicInput.input = "Hello from MusicInput";
-        Console.WriteLine(musicInput.intro);
+        musicInput.input = "Choose your options!";
         Console.WriteLine(musicInput.input);
 
         // display choices

@@ -53,6 +53,10 @@
             "DotNetEnv": {
               "target": "Package",
               "version": "[3.1.1, )"
+            },
+            "Spectre.Console": {
+              "target": "Package",
+              "version": "[0.51.1, )"
             }
           },
           "imports": [
