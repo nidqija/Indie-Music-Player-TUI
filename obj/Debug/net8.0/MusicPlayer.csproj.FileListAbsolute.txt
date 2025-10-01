@@ -22,3 +22,9 @@ C:\Users\User\source\repos\MusicPlayer\MusicPlayer\obj\Debug\net8.0\MusicPlayer.
 C:\Users\User\source\repos\MusicPlayer\MusicPlayer\obj\Debug\net8.0\MusicPla.163160C2.Up2Date
 C:\Users\User\source\repos\MusicPlayer\MusicPlayer\bin\Debug\net8.0\Spectre.Console.dll
 C:\Users\User\source\repos\MusicPlayer\MusicPlayer\bin\Debug\net8.0\fonts\alligator2.flf
+C:\Users\User\source\repos\MusicPlayer\MusicPlayer\bin\Debug\net8.0\NAudio.dll
+C:\Users\User\source\repos\MusicPlayer\MusicPlayer\bin\Debug\net8.0\NAudio.Asio.dll
+C:\Users\User\source\repos\MusicPlayer\MusicPlayer\bin\Debug\net8.0\NAudio.Core.dll
+C:\Users\User\source\repos\MusicPlayer\MusicPlayer\bin\Debug\net8.0\NAudio.Midi.dll
+C:\Users\User\source\repos\MusicPlayer\MusicPlayer\bin\Debug\net8.0\NAudio.Wasapi.dll
+C:\Users\User\source\repos\MusicPlayer\MusicPlayer\bin\Debug\net8.0\NAudio.WinMM.dll

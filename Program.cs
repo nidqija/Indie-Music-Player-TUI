@@ -7,6 +7,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using DotNetEnv;
 using Spectre.Console;
+using NAudio;
+using System.Net;
 
 // class to display menu choices
 class MusicChoices
@@ -80,41 +82,52 @@ class Songs
 
         JsonElement root = doc.RootElement.GetProperty("results");
 
-        Console.WriteLine("Top 5 results: ");
-        int index = 1;
-        List<Songs> songlists = new List<Songs>();
-
-        foreach (JsonElement track in root.EnumerateArray())
-        {   
-            string name = track.GetProperty("name").GetString();
-            string artist = track.GetProperty("artist_name").GetString();
-            Console.WriteLine("================================");
-            Console.WriteLine($"{ name}" + " by: " + $"{ artist}");
-            songlists.Add(new Songs { Name = name , Artist = artist});
-            index++;
-
-
-
-
-            
-
-        }
-
-        Console.WriteLine("\n");
-        songNameChoice = AnsiConsole.Prompt(
-        new SelectionPrompt<Songs>().Title("[yellow]Enter your choice of song to play:[/]")
-         .UseConverter(songname => $"{songname.Name} by {songname.Artist}")
-         .AddChoices(songlists)
-         );
-
 
         if (root.GetArrayLength() == 0)
         {
             Console.WriteLine("No results found for the song: " + getSongName());
         }
 
+        else
+        {
+            Console.WriteLine("Top 5 results: ");
+            int index = 1;
+            List<Songs> songlists = new List<Songs>();
 
-       
+            foreach (JsonElement track in root.EnumerateArray())
+            {
+                string name = track.GetProperty("name").GetString();
+                string artist = track.GetProperty("artist_name").GetString();
+                string audioUrl = track.GetProperty("audio").GetString(); 
+
+                Console.WriteLine("================================");
+                Console.WriteLine($"{name}" + " by: " + $"{artist}");
+                songlists.Add(new Songs { Name = name, Artist = artist , Url=audioUrl});
+                index++;
+
+
+
+
+
+
+            }
+
+            Console.WriteLine("\n");
+            songNameChoice = AnsiConsole.Prompt(
+            new SelectionPrompt<Songs>().Title("[yellow]Enter your choice of song to play:[/]")
+             .UseConverter(songname => $"{songname.Name} by {songname.Artist}")
+             .AddChoices(songlists)
+             );
+
+
+
+
+
+
+        }
+
+
+
 
 
 
@@ -141,7 +154,39 @@ class Songs
 
 class PlaySongs
 {
-   
+
+    private List<Songs> songs;
+    
+    public PlaySongs(List<Songs> songLists)
+    {
+        songs = songLists;
+    }
+
+    public void playSong(Songs song)
+    {
+        using (var webClient = new WebClient())
+        {`
+            string tempFile = Path.GetTempFileName() + ".mp3";
+            webClient.DownloadFile(song.Url, tempFile);
+
+            using var audioFile = new NAudio.Wave.AudioFileReader(tempFile);
+            using var outputDevice = new NAudio.Wave.WaveOutEvent();
+            outputDevice.Init(audioFile);
+            outputDevice.Play();
+
+            Console.WriteLine("Now playing: " + song.Name + " by " + song.Artist);
+            Console.WriteLine("Press any key to stop playback...");
+            Console.ReadLine();
+            outputDevice.Stop();
+
+            File.Delete(tempFile);
+            
+        }
+    }
+
+    
+
+
 }
 
 class EnvFile
@@ -218,15 +263,9 @@ class MusicInput
                 Console.WriteLine("Submitted! Wait for a while...");
                 await songs.searchSong();
 
-                var playsong = songs.returnPlaySongs();
+                PlaySongs playsong = new PlaySongs(null);
+                playsong.playSong(songs.returnPlaySongs());
 
-                if(playsong != null)
-                {
-                    Console.WriteLine("You chose to play: " + playsong.Name + " by " + playsong.Artist);
-                } else
-                {
-                    Console.WriteLine("No song selected to play.");
-                }
 
                     break;
 
