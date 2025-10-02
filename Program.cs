@@ -132,45 +132,80 @@ class Songs
 
 class Playlist
 {
-    private string newPlaylist;
-    private string[] yesNo = { "Yes", "No" };
-    private int totalPlaylist;
-    private string songinsertiontoList;
-    
+    private List<Songs> playlistSongs = new List<Songs>();
 
-   public Playlist(List<Songs> song)
+    public Playlist() { }
+
+    // Show how many songs are in playlist
+    public void ShowPlaylist()
     {
-        totalPlaylist = song.Count;
-    
-        if (song.Count == 0)
+        if (playlistSongs.Count == 0)
         {
-            Console.WriteLine("You have " + totalPlaylist + " songs in your playlist.");
-            Console.WriteLine("\n");
-            newPlaylist = AnsiConsole.Prompt(new SelectionPrompt<string>().Title("[red]Your playlist is empty! Want to create a new one?[/]")
-                .AddChoices(yesNo));
-
-
-            if(newPlaylist == "Yes")
+            Console.WriteLine("Your playlist is empty.");
+        }
+        else
+        {
+            Console.WriteLine($"\n Your Playlist has {playlistSongs.Count} songs");
+            foreach (var song in playlistSongs)
             {
-                createPlayList();
-            } 
-            else if (newPlaylist == "No")
-            {
-                Console.WriteLine("Exiting the program. Goodbye!");
-                Environment.Exit(0);
+                Console.WriteLine($"- {song.Name} by {song.Artist}");
             }
-            
         }
     }
 
-    
-    public void createPlayList()
+    // Add song into playlist
+    public void AddSong(Songs song)
     {
-        songinsertiontoList = AnsiConsole.Prompt(
-            new TextPrompt<string>("[green]Add your songs: [/] ")
-            );
+        playlistSongs.Add(song);
+        Console.WriteLine($" Added {song.Name} by {song.Artist} to your playlist!");
+        Console.WriteLine($"Your playlist now has {playlistSongs.Count} songs");
     }
-    
+
+    // Insert via search (Jamendo + user pick)
+    public async Task InsertSongFromSearch(string searchQuery)
+    {
+        Env.Load(@"C:\Users\User\source\repos\MusicPlayer\MusicPlayer\.env");
+        string client = Environment.GetEnvironmentVariable("JAMENDO_CLIENT_ID");
+
+        using var httpClient = new HttpClient();
+        string url = $"https://api.jamendo.com/v3.0/tracks/?client_id={client}&format=json&limit=5&search={searchQuery}";
+        string response = await httpClient.GetStringAsync(url);
+
+        using JsonDocument doc = JsonDocument.Parse(response);
+        JsonElement root = doc.RootElement.GetProperty("results");
+
+        if (root.GetArrayLength() == 0)
+        {
+            Console.WriteLine("❌ No results found.");
+            return;
+        }
+
+        List<Songs> searchResults = new List<Songs>();
+        foreach (JsonElement track in root.EnumerateArray())
+        {
+            searchResults.Add(new Songs
+            {
+                Name = track.GetProperty("name").GetString(),
+                Artist = track.GetProperty("artist_name").GetString(),
+                Url = track.GetProperty("audio").GetString()
+            });
+        }
+
+        Songs chosenSong = AnsiConsole.Prompt(
+            new SelectionPrompt<Songs>()
+                .Title("[yellow]Choose a song to add:[/]")
+                .UseConverter(s => $"{s.Name} by {s.Artist}")
+                .AddChoices(searchResults)
+        );
+
+        AddSong(chosenSong);
+    }
+
+    // Get full playlist
+    public List<Songs> GetSongs()
+    {
+        return playlistSongs;
+    }
 }
 
 class PlaySongs
@@ -287,10 +322,30 @@ class MusicInput
                 break;
 
             case "2. Playlists":
-                Console.WriteLine("You chose to view playlists");
-                List<Songs> mySongs = new List<Songs>();
-                Playlist playlist = new Playlist(mySongs);
+                Console.WriteLine("🎵 Playlist Menu");
+                Playlist playlist = new Playlist();
+
+                // Show playlist
+                playlist.ShowPlaylist();
+
+                // Ask user if they want to add
+                string addSong = AnsiConsole.Prompt(
+                    new SelectionPrompt<string>()
+                        .Title("[green]Do you want to add a song?[/]")
+                        .AddChoices("Yes", "No")
+                );
+
+                if (addSong == "Yes")
+                {
+                    Console.Write("Enter search keyword: ");
+                    string keyword = Console.ReadLine();
+                    await playlist.InsertSongFromSearch(keyword);
+
+                    // Show playlist again
+                    playlist.ShowPlaylist();
+                }
                 break;
+
 
             case "3. Search by Artists":
                 Console.WriteLine("You chose to search by artists");
