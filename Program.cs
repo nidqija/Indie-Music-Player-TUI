@@ -10,6 +10,9 @@ using System.Net;
 using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
+
 
 // class to display menu choices
 class MusicChoices
