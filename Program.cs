@@ -9,6 +9,7 @@ using NAudio;
 using System.Net;
 using System.IO;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 // class to display menu choices
 class MusicChoices
@@ -215,7 +216,10 @@ class EnvFile
         Env.Load(@"C:\Users\User\source\repos\MusicPlayer\MusicPlayer\.env");
         string client = Environment.GetEnvironmentVariable("JAMENDO_CLIENT_ID");
     }
-}
+};
+
+
+
 
 // main class
 class MusicInput
@@ -229,80 +233,111 @@ class MusicInput
         var fontPath = Path.Combine("fonts", "alligator2.flf");
         var font = FigletFont.Load(fontPath);
 
-        AnsiConsole.Write(
-            new FigletText(font, "MusicInput Station!")
-            .Centered().Color(Color.Yellow)
-        );
-        MusicInput musicInput = new MusicInput();
-        Console.WriteLine("\n");
-        musicInput.input = "Choose your options!";
-        Console.WriteLine(musicInput.input);
+      
+      
 
-        // display choices
-        MusicChoices musicChoices = new MusicChoices();
-        musicChoices.printChoices();
-
-        // handle env file operations
-        EnvFile.doEnvOps(args);
-
-        //============================ get user choice and handles it =================================//
-        var choice = musicChoices.returnChoice();
-
-        switch (choice)
+    while (true)
         {
-            case "1. Search Songs":
-                AnsiConsole.Clear();
-                AnsiConsole.Write(new FigletText(font, "Search Songs")
-                    .Centered().Color(Color.Yellow));
-                Console.WriteLine("\n");
-                Console.WriteLine("Enter your song name: ");
-                string songInput = Console.ReadLine();
-                Songs songs = new Songs();
-                songs.setSongName(songInput);
-                AnsiConsole.Clear();
-                Console.WriteLine("Submitted! Wait for a while...");
-                await songs.searchSong();
+            AnsiConsole.Write(
+          new FigletText(font, "MusicInput Station!")
+          .Centered().Color(Color.Yellow)
+      );
+            MusicInput musicInput = new MusicInput();
+            Console.WriteLine("\n");
+            musicInput.input = "Choose your options!";
+            Console.WriteLine(musicInput.input);
 
-                PlaySongs player = new PlaySongs();
-                player.playSong(songs.returnPlaySongs());
+            // display choices
+            MusicChoices musicChoices = new MusicChoices();
+            musicChoices.printChoices();
 
-                break;
+            // handle env file operations
+            EnvFile.doEnvOps(args);
 
-            case "2. Playlists":
-                AnsiConsole.Clear();
-                AnsiConsole.Write(new FigletText(font, "Playlist")
-                 .Centered().Color(Color.Purple));
-                Console.WriteLine("\n");
-                Playlist playlist = new Playlist();
+            //============================ get user choice and handles it =================================//
+            var choice = musicChoices.returnChoice();
+            switch (choice)
+            {
+                case "1. Search Songs":
+                    AnsiConsole.Clear();
+                    AnsiConsole.Write(new FigletText(font, "Search Songs")
+                        .Centered().Color(Color.Yellow));
+                    Console.WriteLine("\n");
+                    Console.WriteLine("Enter your song name: ");
+                    string songInput = Console.ReadLine();
+                    Songs songs = new Songs();
+                    songs.setSongName(songInput);
+                    AnsiConsole.Clear();
+                    Console.WriteLine("Submitted! Wait for a while...");
+                    await songs.searchSong();
 
-                // Show playlist
-                playlist.ShowPlaylist();
+                    PlaySongs player = new PlaySongs();
+                    player.playSong(songs.returnPlaySongs());                  
+                    break;
 
-                // Ask user if they want to add
-                string addSong = AnsiConsole.Prompt(
-                    new SelectionPrompt<string>()
-                        .Title("[green]Do you want to add a song?[/]")
-                        .AddChoices("Yes", "No")
-                );
+                case "2. Playlists":
+                    AnsiConsole.Clear();
+                    AnsiConsole.Write(new FigletText(font, "Playlist")
+                     .Centered().Color(Color.Purple));
+                    Console.WriteLine("\n");
+                    Playlist playlist = new Playlist();
 
-                if (addSong == "Yes")
-                {
-                    Console.Write("Enter search keyword: ");
-                    string keyword = Console.ReadLine();
-                    await playlist.InsertSongFromSearch(keyword);
-
-                    // Show playlist again
+                    // Show playlist
                     playlist.ShowPlaylist();
-                }
-                break;
 
-            case "3. Search by Artists":
-                Console.WriteLine("You chose to search by artists");
-                break;
+                    // Ask user if they want to add
+                    string addSong = AnsiConsole.Prompt(
+                        new SelectionPrompt<string>()
+                            .Title("[green]Do you want to add a song?[/]")
+                            .AddChoices("Yes", "No")
+                    );
 
-            default:
-                Console.WriteLine("Invalid choice. Please try again.");
+                    if (addSong == "Yes")
+                    {
+                        Console.Write("Enter search keyword: ");
+                        string keyword = Console.ReadLine();
+                        await playlist.InsertSongFromSearch(keyword);
+
+                        // Show playlist again
+                        playlist.ShowPlaylist();
+                    }
+                    break;
+
+                case "3. Search by Artists":
+                    Console.WriteLine("You chose to search by artists");
+                    break;
+
+                default:
+                    Console.WriteLine("Invalid choice. Please try again.");
+
+                    break;
+
+
+
+
+
+
+            }
+            string restartProgram = AnsiConsole.Prompt(
+      new SelectionPrompt<string>()
+      .Title("[green]Return to main menu?[/]")
+      .AddChoices("Yes" , "No"));
+
+            if (restartProgram == "No")
+            {
+                Console.WriteLine("Exiting program. Goodbye!");
                 break;
+            } else if (restartProgram == "Yes")
+            {
+                AnsiConsole.Clear();
+                continue;
+            }
+
+
         }
+
+
+
+
     }
 }
