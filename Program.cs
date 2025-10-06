@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Npgsql;
 using Models;
+using Data;
 
 
 
@@ -209,7 +210,22 @@ class PlaySongs
 
             Console.WriteLine("🎵 Now playing: " + song.Name + " by " + song.Artist);
             Console.WriteLine("Press any key to stop playback...");
-            
+
+            var Song = new Song();
+            Song.songTitle = song.Name;
+            Song.songArtist = song.Artist;
+            Song.songUrl = song.Url;
+            using (var db = new AppDbContext())
+
+            {
+                db.Songs.Add(Song);
+                db.SaveChanges();
+            }
+
+            Console.WriteLine($" Song '{Song.songTitle}' added to the database!");
+
+
+
             Console.ReadKey();
 
             outputDevice.Stop();
