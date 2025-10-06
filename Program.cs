@@ -12,6 +12,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
+using Npgsql;
+using Models;
+
+
+
 
 
 // class to display menu choices
@@ -150,7 +155,7 @@ class Playlist
 
         if (root.GetArrayLength() == 0)
         {
-            Console.WriteLine("❌ No results found.");
+            Console.WriteLine(" No results found.");
             return;
         }
 
@@ -204,6 +209,7 @@ class PlaySongs
 
             Console.WriteLine("🎵 Now playing: " + song.Name + " by " + song.Artist);
             Console.WriteLine("Press any key to stop playback...");
+            
             Console.ReadKey();
 
             outputDevice.Stop();
@@ -231,7 +237,13 @@ class MusicInput
     string intro = "Welcome to MusicInput Station!";
 
     static async Task Main(string[] args)
+
     {
+
+
+
+
+
         //====================== using Spectre.Console to display title ===========================//
         var fontPath = Path.Combine("fonts", "alligator2.flf");
         var font = FigletFont.Load(fontPath);
@@ -275,7 +287,8 @@ class MusicInput
                     await songs.searchSong();
 
                     PlaySongs player = new PlaySongs();
-                    player.playSong(songs.returnPlaySongs());                  
+                    player.playSong(songs.returnPlaySongs());
+                    
                     break;
 
                 case "2. Playlists":
