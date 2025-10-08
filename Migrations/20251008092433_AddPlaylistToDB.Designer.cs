@@ -2,6 +2,7 @@
 using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MusicPlayer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251008092433_AddPlaylistToDB")]
+    partial class AddPlaylistToDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,23 +24,6 @@ namespace MusicPlayer.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Models.Collection", b =>
-                {
-                    b.Property<int>("CollectionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CollectionId"));
-
-                    b.Property<string>("CollectionName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("CollectionId");
-
-                    b.ToTable("Collections");
-                });
-
             modelBuilder.Entity("Models.Song", b =>
                 {
                     b.Property<int>("SongId")
@@ -45,9 +31,6 @@ namespace MusicPlayer.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SongId"));
-
-                    b.Property<int?>("CollectionId")
-                        .HasColumnType("integer");
 
                     b.Property<string>("songArtist")
                         .IsRequired()
@@ -63,23 +46,7 @@ namespace MusicPlayer.Migrations
 
                     b.HasKey("SongId");
 
-                    b.HasIndex("CollectionId");
-
                     b.ToTable("Songs");
-                });
-
-            modelBuilder.Entity("Models.Song", b =>
-                {
-                    b.HasOne("Models.Collection", "Collection")
-                        .WithMany("Songs")
-                        .HasForeignKey("CollectionId");
-
-                    b.Navigation("Collection");
-                });
-
-            modelBuilder.Entity("Models.Collection", b =>
-                {
-                    b.Navigation("Songs");
                 });
 #pragma warning restore 612, 618
         }

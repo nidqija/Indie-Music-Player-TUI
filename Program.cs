@@ -444,6 +444,8 @@ class MusicInput
 
 
                         }
+
+        // restart or exit program //
             string restartProgram = AnsiConsole.Prompt(
       new SelectionPrompt<string>()
       .Title("[green]Return to main menu?[/]")
