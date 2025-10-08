@@ -15,6 +15,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Npgsql;
 using Models;
 using Data;
+using System.Runtime.CompilerServices;
 
 
 
@@ -190,6 +191,12 @@ class Playlist
 
 class PlaySongs
 {
+    private List<string> songSettings = new List<string> {
+        "1. Save Song" ,
+        "2. Pause" ,
+        "3. Resume"
+    };
+
     public void playSong(Songs song)
     {
         if (song == null || string.IsNullOrEmpty(song.Url))
@@ -211,22 +218,60 @@ class PlaySongs
             Console.WriteLine("🎵 Now playing: " + song.Name + " by " + song.Artist);
             Console.WriteLine("Press any key to stop playback...");
 
-            var Song = new Song();
-            Song.songTitle = song.Name;
-            Song.songArtist = song.Artist;
-            Song.songUrl = song.Url;
-            using (var db = new AppDbContext())
-
+            while (true)
             {
-                db.Songs.Add(Song);
-                db.SaveChanges();
+                string settingChoice = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                .Title("[yellow]Settings:[/]")
+                .AddChoices(songSettings));
+
+                if (settingChoice == "1. Save Song")
+                {
+                    Console.WriteLine("Saving song to database...");
+
+                    var newSong = new Song
+                    {
+                        songTitle = song.Name,
+                        songArtist = song.Artist,
+                        songUrl = song.Url
+
+                    };
+
+
+
+                    using (var db = new AppDbContext())
+
+                    {
+                        db.Songs.Add(newSong);
+                        db.SaveChanges();
+                    }
+
+                    Console.WriteLine($" Song '{newSong.songTitle}' added to the database!");
+
+                }
+                else if (settingChoice == "2. Pause")
+                {
+                    outputDevice.Pause();
+                    Console.WriteLine("Song is paused. Press any key to resume...");
+                }
+                else if (settingChoice == "3. Resume")
+                {
+                    outputDevice.Play();
+                    Console.WriteLine("Song is resumed. Press any key to pause...");
+                }
+
+                Console.WriteLine("Press 'S' to stop playback or choose again...");
+                if(Console.ReadKey(true).Key == ConsoleKey.Escape)
+                {
+                    break;
+                }
+
+
+
+
+
             }
-
-            Console.WriteLine($" Song '{Song.songTitle}' added to the database!");
-
-
-
-            Console.ReadKey();
+            
 
             outputDevice.Stop();
             File.Delete(tempFile);
