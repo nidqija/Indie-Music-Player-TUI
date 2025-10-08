@@ -196,6 +196,7 @@ class PlaySongs
         "2. Pause" ,
         "3. Resume"
     };
+    
 
     public void playSong(Songs song)
     {
@@ -216,7 +217,6 @@ class PlaySongs
             outputDevice.Play();
 
             Console.WriteLine("🎵 Now playing: " + song.Name + " by " + song.Artist);
-            Console.WriteLine("Press any key to stop playback...");
 
             while (true)
             {
@@ -260,7 +260,7 @@ class PlaySongs
                     Console.WriteLine("Song is resumed. Press any key to pause...");
                 }
 
-                Console.WriteLine("Press 'S' to stop playback or choose again...");
+                Console.WriteLine("Press 'S'  open settings or choose again...");
                 if(Console.ReadKey(true).Key == ConsoleKey.Escape)
                 {
                     break;
@@ -308,11 +308,15 @@ class MusicInput
         //====================== using Spectre.Console to display title ===========================//
         var fontPath = Path.Combine("fonts", "alligator2.flf");
         var font = FigletFont.Load(fontPath);
+        string[] songSearchChoice = { "1. Browse", "2.Search from collections" };
 
-      
-      
 
-    while (true)
+
+
+
+
+
+        while (true)
         {
             AnsiConsole.Write(
           new FigletText(font, "MusicInput Station!")
@@ -338,63 +342,108 @@ class MusicInput
                     AnsiConsole.Clear();
                     AnsiConsole.Write(new FigletText(font, "Search Songs")
                         .Centered().Color(Color.Yellow));
-                    Console.WriteLine("\n");
-                    Console.WriteLine("Enter your song name: ");
-                    string songInput = Console.ReadLine();
-                    Songs songs = new Songs();
-                    songs.setSongName(songInput);
-                    AnsiConsole.Clear();
-                    Console.WriteLine("Submitted! Wait for a while...");
-                    await songs.searchSong();
-
-                    PlaySongs player = new PlaySongs();
-                    player.playSong(songs.returnPlaySongs());
-                    
-                    break;
-
-                case "2. Playlists":
-                    AnsiConsole.Clear();
-                    AnsiConsole.Write(new FigletText(font, "Playlist")
-                     .Centered().Color(Color.Purple));
-                    Console.WriteLine("\n");
-                    Playlist playlist = new Playlist();
-
-                    // Show playlist
-                    playlist.ShowPlaylist();
-
-                    // Ask user if they want to add
-                    string addSong = AnsiConsole.Prompt(
+                    string songsInput = AnsiConsole.Prompt(
                         new SelectionPrompt<string>()
-                            .Title("[green]Do you want to add a song?[/]")
-                            .AddChoices("Yes", "No")
-                    );
+                        .Title("[green] Select an option to search songs[/]")
+                        .AddChoices(songSearchChoice));
 
-                    if (addSong == "Yes")
+                    if (songsInput == "1. Browse")
                     {
-                        Console.Write("Enter search keyword: ");
-                        string keyword = Console.ReadLine();
-                        await playlist.InsertSongFromSearch(keyword);
+                        AnsiConsole.Clear();
+                        AnsiConsole.Write(new FigletText(font, "Search Songs")
+                            .Centered().Color(Color.Yellow));
+                        Console.WriteLine("\n");
+                        Console.WriteLine("Enter your song name: ");
+                        string songInput = Console.ReadLine();
+                        Songs songs = new Songs();
+                        songs.setSongName(songInput);
+                        AnsiConsole.Clear();
+                        Console.WriteLine("Submitted! Wait for a while...");
+                        await songs.searchSong();
 
-                        // Show playlist again
-                        playlist.ShowPlaylist();
+                        PlaySongs player = new PlaySongs();
+                        player.playSong(songs.returnPlaySongs());
+
+                        break;
+                    } else if (songsInput == "2.Search from collections")
+                    {
+                        AnsiConsole.Clear();
+                        AnsiConsole.Write(new FigletText(font, "Search Songs")
+                            .Centered().Color(Color.Yellow));
+
+                    // fetch songs from database
+
+                        var fetchSong = new List<Song>();
+
+                        using ( var db = new AppDbContext())
+                        {
+                            fetchSong = db.Songs.ToList();
+
+                            Console.WriteLine("Songs in your collection: ");
+                            Console.WriteLine("================================");
+                            foreach ( var song in fetchSong)
+                            {
+                                
+                                Console.WriteLine($"{song.songTitle} by {song.songArtist} ");
+                                Console.WriteLine("---------------------------------------");
+
+
+                            }
+                            Console.WriteLine("\n");
+
+                        }
+
+                       
+
+                        break;
                     }
                     break;
 
-                case "3. Search by Artists":
-                    Console.WriteLine("You chose to search by artists");
-                    break;
-
-                default:
-                    Console.WriteLine("Invalid choice. Please try again.");
-
-                    break;
 
 
+                case "2. Playlists":
+                            AnsiConsole.Clear();
+                            AnsiConsole.Write(new FigletText(font, "Playlist")
+                             .Centered().Color(Color.Purple));
+                            Console.WriteLine("\n");
+                            Playlist playlist = new Playlist();
+
+                            // Show playlist
+                            playlist.ShowPlaylist();
+
+                            // Ask user if they want to add
+                            string addSong = AnsiConsole.Prompt(
+                                new SelectionPrompt<string>()
+                                    .Title("[green]Do you want to add a song?[/]")
+                                    .AddChoices("Yes", "No")
+                            );
+
+                            if (addSong == "Yes")
+                            {
+                                Console.Write("Enter search keyword: ");
+                                string keyword = Console.ReadLine();
+                                await playlist.InsertSongFromSearch(keyword);
+
+                                // Show playlist again
+                                playlist.ShowPlaylist();
+                            }
+                            break;
+
+                        case "3. Search by Artists":
+                            Console.WriteLine("You chose to search by artists");
+                            break;
+
+                        default:
+                            Console.WriteLine("Invalid choice. Please try again.");
+
+                            break;
 
 
 
 
-            }
+
+
+                        }
             string restartProgram = AnsiConsole.Prompt(
       new SelectionPrompt<string>()
       .Title("[green]Return to main menu?[/]")
