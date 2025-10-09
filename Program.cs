@@ -194,7 +194,8 @@ class PlaySongs
     private List<string> songSettings = new List<string> {
         "1. Save Song" ,
         "2. Pause" ,
-        "3. Resume"
+        "3. Resume" ,
+        "4. Return to Main Menu"
     };
     
 
@@ -227,7 +228,7 @@ class PlaySongs
                   string settingChoice = AnsiConsole.Prompt(
                   new SelectionPrompt<string>()
                   .Title("[yellow]Settings:[/]")
-                  .AddChoices("1. Add to Playlist" , "2. Delete from savelist" , "3. Pause" , "4. Resume"));
+                  .AddChoices("1. Add to Playlist" , "2. Delete from savelist" , "3. Pause" , "4. Resume" , "5. Return to Main Menu"));
 
                     if (settingChoice == "1. Add to Playlist")
                     {
@@ -256,7 +257,13 @@ class PlaySongs
                         Console.WriteLine("Song is resumed. Press any key to pause...");
                     }
 
-                    Console.WriteLine("Press 'S'  open settings or choose again...");
+                    else if (settingChoice == "5. Return to Main Menu")
+                    {
+                        Console.WriteLine("Returning to main menu...");
+                        return;
+                    }
+
+                        Console.WriteLine("Press 'S'  open settings or choose again...");
                     if (Console.ReadKey(true).Key == ConsoleKey.Escape)
                     {
                         break;
@@ -291,9 +298,17 @@ class PlaySongs
                         {
                             db.Songs.Add(newSong);
                             db.SaveChanges();
+                            
                         }
 
                         Console.WriteLine($" Song '{newSong.songTitle}' added to the database!");
+                        Console.WriteLine("\n");
+                        Console.WriteLine("Your saved songs: ");
+                        foreach (var s in app.Songs)
+                        {
+                            Console.WriteLine($"- {s.songTitle} by {s.songArtist}");
+                        }
+
 
                     }
                     else if (settingChoice == "2. Pause")
@@ -306,8 +321,13 @@ class PlaySongs
                         outputDevice.Play();
                         Console.WriteLine("Song is resumed. Press any key to pause...");
                     }
+                    else if (settingChoice == "4. Return to Main Menu")
+                    {
+                        Console.WriteLine("Returning to main menu...");
+                        return;
+                    }
 
-                    Console.WriteLine("Press 'S'  open settings or choose again...");
+                        Console.WriteLine("Press 'S'  open settings or choose again...");
                     if (Console.ReadKey(true).Key == ConsoleKey.Escape)
                     {
                         break;
@@ -468,7 +488,7 @@ class MusicInput
 
                             Console.WriteLine("\n");
 
-                        }
+                        } 
 
                         
 
