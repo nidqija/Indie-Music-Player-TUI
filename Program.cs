@@ -218,60 +218,110 @@ class PlaySongs
 
             Console.WriteLine("🎵 Now playing: " + song.Name + " by " + song.Artist);
 
-            while (true)
+            var app = new AppDbContext();
+
+            if(app.Songs.Any(s => s.songTitle == song.Name && s.songArtist == song.Artist))
             {
-                string settingChoice = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                .Title("[yellow]Settings:[/]")
-                .AddChoices(songSettings));
-
-                if (settingChoice == "1. Save Song")
+                while (true)
                 {
-                    Console.WriteLine("Saving song to database...");
+                  string settingChoice = AnsiConsole.Prompt(
+                  new SelectionPrompt<string>()
+                  .Title("[yellow]Settings:[/]")
+                  .AddChoices("1. Add to Playlist" , "2. Delete from savelist" , "3. Pause" , "4. Resume"));
 
-                    var newSong = new Song
+                    if (settingChoice == "1. Add to Playlist")
                     {
-                        songTitle = song.Name,
-                        songArtist = song.Artist,
-                        songUrl = song.Url
-
-                    };
-
-
-
-                    using (var db = new AppDbContext())
-
+                        Console.WriteLine("Adding to playlist...");
+                    } else if (settingChoice == "2. Delete from savelist")
                     {
-                        db.Songs.Add(newSong);
-                        db.SaveChanges();
+                        var songToDelete = app.Songs.FirstOrDefault(s => s.songTitle == song.Name && s.songArtist == song.Artist && s.songUrl == song.Url);
+                        if (songToDelete != null)
+                        {
+                            app.Songs.Remove(songToDelete);
+                            app.SaveChanges();
+                            Console.WriteLine($"{songToDelete.songTitle} is deleted from Saved List!");
+
+                        }
+
+                            
+                    } else if (settingChoice == "3. Pause")
+                    {
+                        outputDevice.Pause();
+                        Console.WriteLine("Song is paused. Press any key to resume...");
                     }
 
-                    Console.WriteLine($" Song '{newSong.songTitle}' added to the database!");
+                    else if (settingChoice == "4. Resume")
+                    {
+                        outputDevice.Play();
+                        Console.WriteLine("Song is resumed. Press any key to pause...");
+                    }
 
+                    Console.WriteLine("Press 'S'  open settings or choose again...");
+                    if (Console.ReadKey(true).Key == ConsoleKey.Escape)
+                    {
+                        break;
+                    }
                 }
-                else if (settingChoice == "2. Pause")
+            } else
+            {
+                while (true)
                 {
-                    outputDevice.Pause();
-                    Console.WriteLine("Song is paused. Press any key to resume...");
+                    string settingChoice = AnsiConsole.Prompt(
+                    new SelectionPrompt<string>()
+                    .Title("[yellow]Settings:[/]")
+                    .AddChoices(songSettings));
+
+                    if (settingChoice == "1. Save Song")
+                    {
+                        Console.WriteLine("Saving song to database...");
+
+                        var newSong = new Song
+                        {
+                            songTitle = song.Name,
+                            songArtist = song.Artist,
+                            songUrl = song.Url
+
+                        };
+
+
+
+
+                        using (var db = new AppDbContext())
+
+                        {
+                            db.Songs.Add(newSong);
+                            db.SaveChanges();
+                        }
+
+                        Console.WriteLine($" Song '{newSong.songTitle}' added to the database!");
+
+                    }
+                    else if (settingChoice == "2. Pause")
+                    {
+                        outputDevice.Pause();
+                        Console.WriteLine("Song is paused. Press any key to resume...");
+                    }
+                    else if (settingChoice == "3. Resume")
+                    {
+                        outputDevice.Play();
+                        Console.WriteLine("Song is resumed. Press any key to pause...");
+                    }
+
+                    Console.WriteLine("Press 'S'  open settings or choose again...");
+                    if (Console.ReadKey(true).Key == ConsoleKey.Escape)
+                    {
+                        break;
+                    }
+
+
+
+
+
                 }
-                else if (settingChoice == "3. Resume")
-                {
-                    outputDevice.Play();
-                    Console.WriteLine("Song is resumed. Press any key to pause...");
-                }
-
-                Console.WriteLine("Press 'S'  open settings or choose again...");
-                if(Console.ReadKey(true).Key == ConsoleKey.Escape)
-                {
-                    break;
-                }
-
-
-
-
 
             }
-            
+
+
 
             outputDevice.Stop();
             File.Delete(tempFile);
@@ -406,6 +456,8 @@ class MusicInput
                                 && s.songArtist == dbSongChoice.Split(" by ")[1]).songUrl
 
                             });
+
+                            
 
                             
 
