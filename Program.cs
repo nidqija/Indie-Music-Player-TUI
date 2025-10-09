@@ -16,6 +16,7 @@ using Npgsql;
 using Models;
 using Data;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.Marshalling;
 
 
 
@@ -114,24 +115,49 @@ class Songs
 class Playlist
 {
     private List<Songs> playlistSongs = new List<Songs>();
-
     public Playlist() { }
 
     // Show how many songs are in playlist
     public void ShowPlaylist()
     {
-        if (playlistSongs.Count == 0)
+
+        var app = new AppDbContext();
+        var fetchPlaylist = new List<Collection>();
+
+
+        using (var db = new AppDbContext())
         {
-            Console.WriteLine("Your playlist is empty.");
+            fetchPlaylist = db.Collections.ToList();
+
         }
-        else
+
+      
+
+        if (fetchPlaylist.Count == 0)
         {
-            Console.WriteLine($"\n Your Playlist has {playlistSongs.Count} songs");
-            foreach (var song in playlistSongs)
+            Console.WriteLine("Your Collection List is empty!");
+            Console.WriteLine("\n");
+            Console.WriteLine("Do you want to create a new collection list?");
+            string CollectInput = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                .AddChoices("1. Yes" , "2. No"));
+
+
+            if (CollectInput == "1. Yes")
             {
-                Console.WriteLine($"- {song.Name} by {song.Artist}");
+                Console.WriteLine("Enter your Collection name");
+
+            }
+        } else
+        {
+            Console.WriteLine("List of Collections (albums)");
+            foreach (var playlist in fetchPlaylist)
+            {
+                Console.WriteLine($"Playlist Name: {playlist.CollectionName}");
             }
         }
+
+         
     }
 
     // Add song into playlist
@@ -378,7 +404,7 @@ class MusicInput
         //====================== using Spectre.Console to display title ===========================//
         var fontPath = Path.Combine("fonts", "alligator2.flf");
         var font = FigletFont.Load(fontPath);
-        string[] songSearchChoice = { "1. Browse", "2.Search from collections" };
+        string[] songSearchChoice = { "1. Browse", "2. Search from collections" , "3. Return to Main Menu"};
 
 
 
@@ -435,7 +461,7 @@ class MusicInput
                         player.playSong(songs.returnPlaySongs());
 
                         break;
-                    } else if (songsInput == "2.Search from collections")
+                    } else if (songsInput == "2. Search from collections")
                     {
                         AnsiConsole.Clear();
                         AnsiConsole.Write(new FigletText(font, "Search Songs")
@@ -477,26 +503,18 @@ class MusicInput
 
                             });
 
-                            
-
-                            
-
-
-
-
-
-
                             Console.WriteLine("\n");
 
                         } 
 
                         
+                        break;
 
-                       
-
+                    } else if (songsInput == "3. Return to Main Menu")
+                    {
                         break;
                     }
-                    break;
+                        break;
 
 
 
@@ -509,28 +527,15 @@ class MusicInput
 
                             // Show playlist
                             playlist.ShowPlaylist();
+                            
+                            
 
-                            // Ask user if they want to add
-                            string addSong = AnsiConsole.Prompt(
-                                new SelectionPrompt<string>()
-                                    .Title("[green]Do you want to add a song?[/]")
-                                    .AddChoices("Yes", "No")
-                            );
-
-                            if (addSong == "Yes")
-                            {
-                                Console.Write("Enter search keyword: ");
-                                string keyword = Console.ReadLine();
-                                await playlist.InsertSongFromSearch(keyword);
-
-                                // Show playlist again
-                                playlist.ShowPlaylist();
-                            }
                             break;
 
                         case "3. Search by Artists":
                             Console.WriteLine("You chose to search by artists");
                             break;
+
 
                         default:
                             Console.WriteLine("Invalid choice. Please try again.");
