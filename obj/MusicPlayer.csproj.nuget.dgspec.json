@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\User\\source\\repos\\MusicPlayer\\musicplayer\\MusicPlayer.csproj": {}
+    "C:\\Users\\User\\source\\repos\\MusicPlayer\\MusicPlayer\\MusicPlayer.csproj": {}
   },
   "projects": {
-    "C:\\Users\\User\\source\\repos\\MusicPlayer\\musicplayer\\MusicPlayer.csproj": {
+    "C:\\Users\\User\\source\\repos\\MusicPlayer\\MusicPlayer\\MusicPlayer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\User\\source\\repos\\MusicPlayer\\musicplayer\\MusicPlayer.csproj",
+        "projectUniqueName": "C:\\Users\\User\\source\\repos\\MusicPlayer\\MusicPlayer\\MusicPlayer.csproj",
         "projectName": "MusicPlayer",
-        "projectPath": "C:\\Users\\User\\source\\repos\\MusicPlayer\\musicplayer\\MusicPlayer.csproj",
+        "projectPath": "C:\\Users\\User\\source\\repos\\MusicPlayer\\MusicPlayer\\MusicPlayer.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\User\\source\\repos\\MusicPlayer\\musicplayer\\obj\\",
+        "outputPath": "C:\\Users\\User\\source\\repos\\MusicPlayer\\MusicPlayer\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

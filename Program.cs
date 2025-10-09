@@ -377,21 +377,48 @@ class MusicInput
 
                         using ( var db = new AppDbContext())
                         {
+
+                            // fetched song list from database
                             fetchSong = db.Songs.ToList();
 
                             Console.WriteLine("Songs in your collection: ");
-                            Console.WriteLine("================================");
-                            foreach ( var song in fetchSong)
+                            Console.WriteLine("\n");
+
+                            // translate the list of songs from db to array to display as choice //
+                            string[] songList = fetchSong.Select(s =>
+                            $"{s.songTitle} by {s.songArtist}")
+                                .ToArray();
+
+                            // display fetched songs as choice selection 
+
+                            string dbSongChoice = AnsiConsole.Prompt(
+                                new SelectionPrompt<string>()
+                                .Title("[green]Select a song to play from your collection:[/]")
+                                .AddChoices(songList));
+
+                            PlaySongs player = new PlaySongs();
+
+                            player.playSong(new Songs
                             {
-                                
-                                Console.WriteLine($"{song.songTitle} by {song.songArtist} ");
-                                Console.WriteLine("---------------------------------------");
+                                Name = dbSongChoice.Split(" by ")[0],
+                                Artist = dbSongChoice.Split(" by ")[1],
+                                Url = fetchSong.First(s => s.songTitle == dbSongChoice.Split(" by ")[0]
+                                && s.songArtist == dbSongChoice.Split(" by ")[1]).songUrl
+
+                            });
+
+                            
 
 
-                            }
+
+
+
+
                             Console.WriteLine("\n");
 
                         }
+
+                        
 
                        
 
