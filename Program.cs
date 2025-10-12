@@ -146,6 +146,52 @@ class Playlist
             if (CollectInput == "1. Yes")
             {
                 Console.WriteLine("Enter your Collection name");
+                string collectionName = Console.ReadLine();
+
+
+// ============================= checks empty collection name ( input ) ==============================//
+
+                if (string.IsNullOrEmpty(collectionName))
+                {
+                    Console.WriteLine("Collection name cannot be empty. Please try again.");
+                    return;
+                } 
+                
+                
+                else
+// ============================== connect to database and create new collection =============================//
+                {
+                    var newCollection = new Collection
+                    {
+                        CollectionName = collectionName
+                    };
+
+                    using (var db = new AppDbContext())
+                    {
+                        db.Collections.Add(newCollection);
+                        db.SaveChanges();
+                        
+                        Console.WriteLine($"Collection {newCollection.CollectionName} created successfully!");
+                        Console.WriteLine("\n");
+                       
+                        
+                    }
+                    Console.WriteLine("Your Collections: ");
+                    Console.WriteLine("========================= | ===========================");
+
+                    foreach (var db in app.Collections)
+                    {
+                        
+                        Console.WriteLine($"{db.CollectionId} | {db.CollectionName}");
+                    }
+
+                    
+                }
+                    
+
+
+
+                
 
             }
         } else
