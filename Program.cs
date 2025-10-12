@@ -20,8 +20,6 @@ using System.Runtime.InteropServices.Marshalling;
 
 
 
-
-
 // class to display menu choices
 class MusicChoices
 {
@@ -187,23 +185,28 @@ class Playlist
 
                     
                 }
-                    
-
-
-
-                
+                             
 
             }
         } else
         {
-            Console.WriteLine("List of Collections (albums)");
-            foreach (var playlist in fetchPlaylist)
+            var table = new Table();
+            table.AddColumn(new TableColumn("Collection ID").Centered());
+            table.AddColumn(new TableColumn("Collection Name").Centered());
+            table.AddColumn(new TableColumn("Number of Songs").Centered());
+
+            foreach (var db in app.Collections)
             {
-                Console.WriteLine($"Playlist Name: {playlist.CollectionName}");
-            }
+                table.AddRow(new Text(db.CollectionId.ToString()), new Text(db.CollectionName), new Text(db.Songs.Count().ToString()));
+
+           }
+
+            AnsiConsole.Write(table);
+
+
         }
 
-         
+
     }
 
     // Add song into playlist
@@ -444,16 +447,10 @@ class MusicInput
     {
 
 
-
-
-
         //====================== using Spectre.Console to display title ===========================//
         var fontPath = Path.Combine("fonts", "alligator2.flf");
         var font = FigletFont.Load(fontPath);
         string[] songSearchChoice = { "1. Browse", "2. Search from collections" , "3. Return to Main Menu"};
-
-
-
 
 
 
@@ -613,7 +610,6 @@ class MusicInput
 
 
         }
-
 
 
 
