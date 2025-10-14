@@ -17,6 +17,7 @@ using Models;
 using Data;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.Marshalling;
+using Microsoft.EntityFrameworkCore.Storage.Json;
 
 
 
@@ -121,43 +122,30 @@ class Playlist
 
         var app = new AppDbContext();
         var fetchPlaylist = new List<Collection>();
+        string[] playlistMenu = { "1. Create New Collection", "2. View Existing Collections", "3. Return to Main Menu" };
 
+        string playlistChoice = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+            .AddChoices(playlistMenu));
 
-        using (var db = new AppDbContext())
+        switch (playlistChoice)
         {
-            fetchPlaylist = db.Collections.ToList();
-
-        }
-
-      
-
-        if (fetchPlaylist.Count == 0)
-        {
-            Console.WriteLine("Your Collection List is empty!");
-            Console.WriteLine("\n");
-            Console.WriteLine("Do you want to create a new collection list?");
-            string CollectInput = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                .AddChoices("1. Yes" , "2. No"));
-
-
-            if (CollectInput == "1. Yes")
-            {
+            case "1. Create New Collection":
                 Console.WriteLine("Enter your Collection name");
                 string collectionName = Console.ReadLine();
 
 
-// ============================= checks empty collection name ( input ) ==============================//
+                // ============================= checks empty collection name ( input ) ==============================//
 
                 if (string.IsNullOrEmpty(collectionName))
                 {
                     Console.WriteLine("Collection name cannot be empty. Please try again.");
                     return;
-                } 
-                
-                
+                }
+
+
                 else
-// ============================== connect to database and create new collection =============================//
+                // ============================== connect to database and create new collection =============================//
                 {
                     var newCollection = new Collection
                     {
@@ -168,46 +156,71 @@ class Playlist
                     {
                         db.Collections.Add(newCollection);
                         db.SaveChanges();
-                        
+
                         Console.WriteLine($"Collection {newCollection.CollectionName} created successfully!");
                         Console.WriteLine("\n");
-                       
-                        
+
+
                     }
                     Console.WriteLine("Your Collections: ");
                     Console.WriteLine("========================= | ===========================");
 
                     foreach (var db in app.Collections)
                     {
-                        
+
                         Console.WriteLine($"{db.CollectionId} | {db.CollectionName}");
                     }
 
-                    
+
+                    break;
                 }
-                             
 
-            }
-        } else
-        {
-            var table = new Table();
-            table.AddColumn(new TableColumn("Collection ID").Centered());
-            table.AddColumn(new TableColumn("Collection Name").Centered());
-            table.AddColumn(new TableColumn("Number of Songs").Centered());
+            case "2. View Existing Collections":
 
-            foreach (var db in app.Collections)
-            {
-                table.AddRow(new Text(db.CollectionId.ToString()), new Text(db.CollectionName), new Text(db.Songs.Count().ToString()));
+               
 
-           }
+                var table = new Table();
+                table.AddColumn(new TableColumn("Collection ID").Centered());
+                table.AddColumn(new TableColumn("Collection Name").Centered());
+                table.AddColumn(new TableColumn("Number of Songs").Centered());
 
-            AnsiConsole.Write(table);
+                foreach (var db in app.Collections)
+                {
+                    table.AddRow(new Text(db.CollectionId.ToString()), new Text(db.CollectionName), new Text(db.Songs.Count().ToString()));
+
+                }
+
+                AnsiConsole.Write(table);
+
+
+
+                break;
+
+
+            case "3. Return to Main Menu":
+
+
+                return;
+              
+
+
+
+
+
+
+        }
+            
+        
+
+
+       
+       
 
 
         }
 
 
-    }
+    
 
     // Add song into playlist
     public void AddSong(Songs song)
