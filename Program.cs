@@ -177,16 +177,21 @@ class Playlist
 
             case "2. View Existing Collections":
 
-               
+
+                var collections = app.Collections
+                    .Include(c => c.Songs)
+                    .ToList();
 
                 var table = new Table();
+                
                 table.AddColumn(new TableColumn("Collection ID").Centered());
                 table.AddColumn(new TableColumn("Collection Name").Centered());
                 table.AddColumn(new TableColumn("Number of Songs").Centered());
 
                 foreach (var db in app.Collections)
                 {
-                    table.AddRow(new Text(db.CollectionId.ToString()), new Text(db.CollectionName), new Text(db.Songs.Count().ToString()));
+                    var songCounts = collections.Count();
+                    table.AddRow(new Text(db.CollectionId.ToString()), new Text(db.CollectionName), new Text(songCounts.ToString()));
 
                 }
 
@@ -194,28 +199,25 @@ class Playlist
 
 
 
+
+
+
                 break;
 
 
             case "3. Return to Main Menu":
-
-
                 return;
+
+
+
+            default:
+                Console.WriteLine("Invalid Choice! Enter a valid choice ");
+                break;
               
-
-
-
-
-
 
         }
             
         
-
-
-       
-       
-
 
         }
 
@@ -320,7 +322,62 @@ class PlaySongs
 
                     if (settingChoice == "1. Add to Playlist")
                     {
-                        Console.WriteLine("Adding to playlist...");
+                        var playlists = app.Collections.ToList();
+
+                        Console.WriteLine("Select a playlist to save your song!");
+                        string playlistname = AnsiConsole.Prompt(
+                            new SelectionPrompt<string>()
+                            .AddChoices(playlists.Select(p => p.CollectionName)));
+
+
+                       // matching the playlist name to collection name from db //
+                        var selectedPlaylist = playlists.FirstOrDefault(p => p.CollectionName == playlistname);
+
+                     // matching the song displayed and the artist to the data from db //
+                        var currentSong = app.Songs.FirstOrDefault(s => s.songTitle == song.Name && s.songArtist == song.Artist);
+
+                     //  checks if the playlist and current song is empty before
+                        if(selectedPlaylist != null && currentSong != null)
+                        {
+                            if(!selectedPlaylist.Songs.Any(s => s.SongId == currentSong.SongId))
+                            {
+                                selectedPlaylist.Songs.Add(currentSong);
+                                currentSong.CollectionId = selectedPlaylist.CollectionId;
+
+                                app.SaveChanges();
+                                AnsiConsole.MarkupLine($"[green]✅ '{currentSong.songTitle}' added to '{selectedPlaylist.CollectionName}'![/]");
+                                var playlistSongs = app.Collections
+                                    .Include(c => c.Songs)
+                                    .FirstOrDefault(c => c.CollectionId == selectedPlaylist.CollectionId);
+
+
+
+
+                               
+
+                                Console.WriteLine($"{playlistname}");
+                                foreach (var s in playlistSongs.Songs)
+                                {
+                                    Console.WriteLine($"{s.SongId}- {s.songTitle} by {s.songArtist}");
+
+                                }
+
+
+
+
+
+
+                            }
+                            else
+                            {
+                                AnsiConsole.MarkupLine($"[yellow]⚠️ Song already exists in '{selectedPlaylist.CollectionName}'.[/]");
+                            }
+                        }
+
+
+
+
+
                     } else if (settingChoice == "2. Delete from savelist")
                     {
                         var songToDelete = app.Songs.FirstOrDefault(s => s.songTitle == song.Name && s.songArtist == song.Artist && s.songUrl == song.Url);
@@ -422,13 +479,9 @@ class PlaySongs
                     }
 
 
-
-
-
                 }
 
             }
-
 
 
             outputDevice.Stop();
@@ -464,7 +517,6 @@ class MusicInput
         var fontPath = Path.Combine("fonts", "alligator2.flf");
         var font = FigletFont.Load(fontPath);
         string[] songSearchChoice = { "1. Browse", "2. Search from collections" , "3. Return to Main Menu"};
-
 
 
 
@@ -585,7 +637,6 @@ class MusicInput
                             playlist.ShowPlaylist();
                             
                             
-
                             break;
 
                         case "3. Search by Artists":
@@ -597,11 +648,6 @@ class MusicInput
                             Console.WriteLine("Invalid choice. Please try again.");
 
                             break;
-
-
-
-
-
 
                         }
 
