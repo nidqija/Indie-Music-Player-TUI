@@ -165,9 +165,10 @@ class Playlist
                     Console.WriteLine("Your Collections: ");
                     Console.WriteLine("========================= | ===========================");
 
-                    foreach (var db in app.Collections)
-                    {
+                    var allCollections = app.Collections.ToList();
 
+                    foreach (var db in allCollections)
+                    {
                         Console.WriteLine($"{db.CollectionId} | {db.CollectionName}");
                     }
 
@@ -190,7 +191,8 @@ class Playlist
 
                 foreach (var db in app.Collections)
                 {
-                    var songCounts = collections.Count();
+                    var songCounts = db.Songs.Count();
+
                     table.AddRow(new Text(db.CollectionId.ToString()), new Text(db.CollectionName), new Text(songCounts.ToString()));
 
                 }
@@ -199,10 +201,47 @@ class Playlist
 
 
 
+                string viewCollection = AnsiConsole.Prompt(
+                    new SelectionPrompt<string>()
+                    .Title("[yellow] Select a collection to view or add songs:[/]")
+                    .AddChoices(collections.Select(c => c.CollectionName).ToArray())
+                    );
+
+                var selectedCollection = collections.FirstOrDefault(c => c.CollectionName == viewCollection);
+
+                if(selectedCollection != null)
+                {
+                    if(selectedCollection.Songs.Count == 0)
+                    {
+                        Console.WriteLine("No songs in this collection yet. ");
+                        Console.WriteLine("Do you want to add songs to this collection?");
+                    } 
+                    else
+                    {
+                       AnsiConsole.Write( new Markup($"[underline yellow] {selectedCollection.CollectionName}[/]"));
+                       Console.WriteLine("\n");
+
+                        foreach (var song in selectedCollection.Songs)
+                        {
+                            Console.WriteLine(song.SongId + " - " + song.songTitle + " by " + song.songArtist);
+                        }
+                    }
+                        
+                } else
+                {
+                    Console.WriteLine("Collection not found.");
+                    return;
+                }
 
 
 
-                break;
+
+
+
+
+
+
+                    break;
 
 
             case "3. Return to Main Menu":
