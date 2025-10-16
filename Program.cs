@@ -225,8 +225,30 @@ class Playlist
                         {
                             Console.WriteLine(song.SongId + " - " + song.songTitle + " by " + song.songArtist);
                         }
+
+                        var songChoicefromCollection = selectedCollection.Songs
+                            .Select(s => $"{s.songTitle} by {s.songArtist}").ToList();
+
+                        string playsongsfromCollection = AnsiConsole.Prompt(
+                            new SelectionPrompt<string>()
+                            .Title("[yellow] Select a song to play from this collection:[/]")
+                            .AddChoices(songChoicefromCollection));
+
+
+                        PlaySongs player = new PlaySongs();
+
+                        player.playSong(new Songs
+                        {
+                            Name = playsongsfromCollection.Split(" by ")[0],
+                            Artist = playsongsfromCollection.Split(" by ")[1],
+                            Url = selectedCollection.Songs.First(s => s.songTitle == playsongsfromCollection.Split(" by ")[0]
+                            && s.songArtist == playsongsfromCollection.Split(" by ")[1]).songUrl,
+                        });
+
+
+
                     }
-                        
+
                 } else
                 {
                     Console.WriteLine("Collection not found.");
