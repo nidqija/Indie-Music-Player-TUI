@@ -291,9 +291,9 @@ class Playlist
     public async Task InsertSongfromArtistSearch(string artistName)
     {
         Env.Load(@"C:\Users\User\source\repos\MusicPlayer\MusicPlayer\.env");
-        string client = Environment.GetEnvironmentVariable("JAMEDO_CLIENT_ID");
+        string client = Environment.GetEnvironmentVariable("JAMENDO_CLIENT_ID");
         using var httpClient = new HttpClient();
-        string url = $"https://api.jamendo.com/v3.0/tracks/?client_id={client}&format=json&limit=5&search={artistName}";
+        string url = $"https://api.jamendo.com/v3.0/tracks/?client_id={client}&format=json&limit=10&search={artistName}";
         string response = await httpClient.GetStringAsync(url);
 
         using JsonDocument doc = JsonDocument.Parse(response);
@@ -319,7 +319,7 @@ class Playlist
 
         Songs chosenArtistSongs = AnsiConsole.Prompt(
             new SelectionPrompt<Songs>()
-            .Title($"[yellow]Choose a song to add from {artistName}:")
+            .Title("[yellow]Choose a song to add from " + artistName + ":[/]")
             .UseConverter(s=>$"{s.Name} by {s.Artist}")
             .AddChoices(artistResult));
 
@@ -335,7 +335,7 @@ class Playlist
         string client = Environment.GetEnvironmentVariable("JAMENDO_CLIENT_ID");
 
         using var httpClient = new HttpClient();
-        string url = $"https://api.jamendo.com/v3.0/tracks/?client_id={client}&format=json&limit=5&search={searchQuery}";
+        string url = $"https://api.jamendo.com/v3.0/tracks/?client_id={client}&format=json&limit=10&search={searchQuery}";
         string response = await httpClient.GetStringAsync(url);
 
         using JsonDocument doc = JsonDocument.Parse(response);
