@@ -237,6 +237,11 @@ class Playlist
 
                         PlaySongs player = new PlaySongs();
 
+
+                        // play the selected song from collection
+                        // this code splits the selected string to get song title and artist
+                        // the url is fetched from the database based on the song artist and title
+
                         player.playSong(new Songs
                         {
                             Name = playsongsfromCollection.Split(" by ")[0],
@@ -245,8 +250,6 @@ class Playlist
                             && s.songArtist == playsongsfromCollection.Split(" by ")[1]).songUrl,
                         });
 
-
-
                     }
 
                 } else
@@ -254,14 +257,6 @@ class Playlist
                     Console.WriteLine("Collection not found.");
                     return;
                 }
-
-
-
-
-
-
-
-
 
                     break;
 
@@ -293,6 +288,46 @@ class Playlist
         Console.WriteLine($"Your playlist now has {playlistSongs.Count} songs");
     }
 
+    public async Task InsertSongfromArtistSearch(string artistName)
+    {
+        Env.Load(@"C:\Users\User\source\repos\MusicPlayer\MusicPlayer\.env");
+        string client = Environment.GetEnvironmentVariable("JAMEDO_CLIENT_ID");
+        using var httpClient = new HttpClient();
+        string url = $"https://api.jamendo.com/v3.0/tracks/?client_id={client}&format=json&limit=5&search={artistName}";
+        string response = await httpClient.GetStringAsync(url);
+
+        using JsonDocument doc = JsonDocument.Parse(response);
+        JsonElement root = doc.RootElement.GetProperty("results");
+
+        if(root.GetArrayLength() == 0)
+        {
+            Console.WriteLine($"No songs found for {artistName}");
+            return;
+        }
+
+        List<Songs> artistResult = new List<Songs>();
+
+        foreach(JsonElement track in root.EnumerateArray())
+        {
+            artistResult.Add(new Songs
+            {
+                Name = track.GetProperty("name").GetString(),
+                Artist = track.GetProperty("artist_name").GetString(),
+                Url = track.GetProperty("audio").GetString()
+            });
+        }
+
+        Songs chosenArtistSongs = AnsiConsole.Prompt(
+            new SelectionPrompt<Songs>()
+            .Title($"[yellow]Choose a song to add from {artistName}:")
+            .UseConverter(s=>$"{s.Name} by {s.Artist}")
+            .AddChoices(artistResult));
+
+
+        
+
+
+    }
     // Insert via search (Jamendo + user pick)
     public async Task InsertSongFromSearch(string searchQuery)
     {
@@ -567,7 +602,6 @@ class EnvFile
 class MusicInput
 {
     string input;
-    string intro = "Welcome to MusicInput Station!";
 
     static async Task Main(string[] args)
 
@@ -577,7 +611,7 @@ class MusicInput
         //====================== using Spectre.Console to display title ===========================//
         var fontPath = Path.Combine("fonts", "alligator2.flf");
         var font = FigletFont.Load(fontPath);
-        string[] songSearchChoice = { "1. Browse", "2. Search from collections" , "3. Return to Main Menu"};
+        string[] songSearchChoice = { "1. Browse", "2. Search from saved list" , "3. Return to Main Menu"};
 
 
 
@@ -630,7 +664,7 @@ class MusicInput
                         player.playSong(songs.returnPlaySongs());
 
                         break;
-                    } else if (songsInput == "2. Search from collections")
+                    } else if (songsInput == "2. Search from saved list")
                     {
                         AnsiConsole.Clear();
                         AnsiConsole.Write(new FigletText(font, "Search Songs")
@@ -646,7 +680,7 @@ class MusicInput
                             // fetched song list from database
                             fetchSong = db.Songs.ToList();
 
-                            Console.WriteLine("Songs in your collection: ");
+                            Console.WriteLine("Songs in your saved list: ");
                             Console.WriteLine("\n");
 
                             // translate the list of songs from db to array to display as choice //
@@ -658,7 +692,7 @@ class MusicInput
 
                             string dbSongChoice = AnsiConsole.Prompt(
                                 new SelectionPrompt<string>()
-                                .Title("[green]Select a song to play from your collection:[/]")
+                                .Title("[green]Select a song to play from your saved list:[/]")
                                 .AddChoices(songList));
 
                             PlaySongs player = new PlaySongs();
@@ -700,8 +734,37 @@ class MusicInput
                             
                             break;
 
-                        case "3. Search by Artists":
-                            Console.WriteLine("You chose to search by artists");
+                case "3. Search by Artists":
+                            AnsiConsole.Clear();
+                            AnsiConsole.Write(new FigletText(font, "Search by Artists")
+                           .Centered().Color(Color.Blue1));
+
+                            Console.WriteLine("\n");
+                            while (true)
+                      {
+                        AnsiConsole.WriteLine("Enter artist name to search: ");
+                        string artistInput = Console.ReadLine();
+                        Playlist artistplay = new Playlist();
+                        await artistplay.InsertSongfromArtistSearch(artistInput);
+                        string continueChoice = AnsiConsole.Prompt(
+                            new SelectionPrompt<string>()
+                            .Title("[green]Do you want to search another artist?[/]")
+                            .AddChoices("Yes", "No"));
+
+                        if (continueChoice == "No")
+                        {
+                            break;
+                        } else if (continueChoice == "Yes")
+                        {
+                            AnsiConsole.Clear();
+                            continue;
+                        }
+                    }
+                           
+                            
+
+                    
+
                             break;
 
 
