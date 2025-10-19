@@ -293,7 +293,7 @@ class Playlist
         Env.Load(@"C:\Users\User\source\repos\MusicPlayer\MusicPlayer\.env");
         string client = Environment.GetEnvironmentVariable("JAMENDO_CLIENT_ID");
         using var httpClient = new HttpClient();
-        string url = $"https://api.jamendo.com/v3.0/tracks/?client_id={client}&format=json&limit=10&search={artistName}";
+        string url = $"https://api.jamendo.com/v3.0/tracks/?client_id={client}&format=json&limit=10&artist_name={artistName}";
         string response = await httpClient.GetStringAsync(url);
 
         using JsonDocument doc = JsonDocument.Parse(response);
@@ -314,6 +314,8 @@ class Playlist
                 Name = track.GetProperty("name").GetString(),
                 Artist = track.GetProperty("artist_name").GetString(),
                 Url = track.GetProperty("audio").GetString()
+
+                
             });
         }
 
