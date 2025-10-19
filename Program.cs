@@ -326,6 +326,15 @@ class Playlist
             .AddChoices(artistResult));
 
 
+        PlaySongs player = new PlaySongs();
+
+        player.playSong(chosenArtistSongs);
+
+
+
+        
+
+
         
 
 
@@ -756,7 +765,8 @@ class MusicInput
                         if (continueChoice == "No")
                         {
                             break;
-                        } else if (continueChoice == "Yes")
+                        } 
+                        else if (continueChoice == "Yes")
                         {
                             AnsiConsole.Clear();
                             continue;
