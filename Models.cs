@@ -7,6 +7,10 @@
         public string songArtist { get; set; }
         public string songUrl { get; set; }
 
+        public bool hasDownloaded { get; set; }
+
+        public string? downloadfilePath { get; set; }
+
         public int? CollectionId { get; set; }
         public Collection Collection { get; set; }
     }

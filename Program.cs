@@ -43,7 +43,7 @@ class MusicChoices
     }
 }
 
-class Songs
+ class Songs
 {
     private string songName;
     private Songs songNameChoice;
@@ -457,22 +457,12 @@ class PlaySongs
                                     .Include(c => c.Songs)
                                     .FirstOrDefault(c => c.CollectionId == selectedPlaylist.CollectionId);
 
-
-
-
-                               
-
                                 Console.WriteLine($"{playlistname}");
                                 foreach (var s in playlistSongs.Songs)
                                 {
                                     Console.WriteLine($"{s.SongId}- {s.songTitle} by {s.songArtist}");
 
                                 }
-
-
-
-
-
 
                             }
                             else
@@ -597,6 +587,9 @@ class PlaySongs
     }
 }
 
+
+
+
 class EnvFile
 {
     public static void doEnvOps(string[] args)
@@ -605,8 +598,6 @@ class EnvFile
         string client = Environment.GetEnvironmentVariable("JAMENDO_CLIENT_ID");
     }
 };
-
-
 
 
 // main class
@@ -774,9 +765,6 @@ class MusicInput
                     }
                            
                             
-
-                    
-
                             break;
 
 
@@ -805,8 +793,6 @@ class MusicInput
 
 
         }
-
-
 
     }
 }
