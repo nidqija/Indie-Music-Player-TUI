@@ -18,6 +18,7 @@ using Data;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.Marshalling;
 using Microsoft.EntityFrameworkCore.Storage.Json;
+using MusicPlayer;
 
 
 
@@ -392,7 +393,8 @@ class PlaySongs
         "1. Save Song" ,
         "2. Pause" ,
         "3. Resume" ,
-        "4. Return to Main Menu"
+        "4. Download song" ,
+        "5. Return to Main Menu"
     };
     
 
@@ -425,7 +427,7 @@ class PlaySongs
                   string settingChoice = AnsiConsole.Prompt(
                   new SelectionPrompt<string>()
                   .Title("[yellow]Settings:[/]")
-                  .AddChoices("1. Add to Playlist" , "2. Delete from savelist" , "3. Pause" , "4. Resume" , "5. Return to Main Menu"));
+                  .AddChoices("1. Add to Playlist" , "2. Delete from savelist" , "3. Pause" , "4. Resume" , "5. Download song" , "6. Return to Main Menu"));
 
                     if (settingChoice == "1. Add to Playlist")
                     {
@@ -499,7 +501,14 @@ class PlaySongs
                         Console.WriteLine("Song is resumed. Press any key to pause...");
                     }
 
-                    else if (settingChoice == "5. Return to Main Menu")
+                    else if (settingChoice == "5. Download song")
+                    {
+                        DownloadManager download = new DownloadManager();
+                        download.DownloadSong(song).Wait();
+
+                    }
+
+                    else if (settingChoice == "6. Return to Main Menu")
                     {
                         Console.WriteLine("Returning to main menu...");
                         return;
@@ -563,7 +572,12 @@ class PlaySongs
                         outputDevice.Play();
                         Console.WriteLine("Song is resumed. Press any key to pause...");
                     }
-                    else if (settingChoice == "4. Return to Main Menu")
+                    else if (settingChoice == "4. Download song")
+                    {
+                        DownloadManager download = new DownloadManager();
+                        download.DownloadSong(song).Wait();
+                    }
+                    else if (settingChoice == "5. Return to Main Menu")
                     {
                         Console.WriteLine("Returning to main menu...");
                         return;
@@ -583,6 +597,59 @@ class PlaySongs
 
             outputDevice.Stop();
             File.Delete(tempFile);
+        }
+    }
+}
+
+
+class DownloadManager
+{
+    private readonly SongProcess songProcess = new SongProcess();
+
+    public async Task DownloadSong(Songs song)
+    {
+        if(song == null || string.IsNullOrEmpty(song.Url))
+        {
+            Console.WriteLine("No songs selected or URL is invalid.");
+            return;
+        } else
+        {
+            string filePath = songProcess.GetLocalPath(song);
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+            Console.WriteLine($"Downloading {song.Name} by {song.Artist}");
+
+            using var httpClient = new HttpClient();
+            using var response = await httpClient.GetAsync(song.Url , HttpCompletionOption.ResponseHeadersRead);
+
+            response.EnsureSuccessStatusCode();
+
+            var totalBytes = response.Content.Headers.ContentLength ?? -1L;
+            var canReportProgress = totalBytes != -1;
+
+            using var contentStream = await response.Content.ReadAsStreamAsync();
+            using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
+            await contentStream.CopyToAsync(fileStream);
+            fileStream.Close();
+
+            Console.WriteLine($"Download completed! File saved to: {filePath}");
+
+            using (var db = new AppDbContext())
+            {
+               var existing = db.Songs.FirstOrDefault(s => s.songTitle == song.Name && s.songArtist == song.Artist);
+
+                if (existing != null)
+                {
+                    existing.hasDownloaded = true;
+                    existing.downloadfilePath = filePath;
+                    db.SaveChanges();
+                    Console.WriteLine($"Song '{existing.songTitle}' download status updated in database.");
+                }
+                
+            }
+
+
+
         }
     }
 }
