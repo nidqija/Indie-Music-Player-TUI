@@ -230,26 +230,59 @@ class Playlist
                         var songChoicefromCollection = selectedCollection.Songs
                             .Select(s => $"{s.songTitle} by {s.songArtist}").ToList();
 
+                        string[] songplayFromCollection = { "1. Choose a song to play ", "2. Play all songs in collection", "3. Return to Main Menu" };
+
                         string playsongsfromCollection = AnsiConsole.Prompt(
                             new SelectionPrompt<string>()
-                            .Title("[yellow] Select a song to play from this collection:[/]")
-                            .AddChoices(songChoicefromCollection));
+                            .Title("[yellow] Select your collection options:[/]")
+                            .AddChoices(songplayFromCollection));
 
 
-                        PlaySongs player = new PlaySongs();
-
-
-                        // play the selected song from collection
-                        // this code splits the selected string to get song title and artist
-                        // the url is fetched from the database based on the song artist and title
-
-                        player.playSong(new Songs
+                        if (playsongsfromCollection == "1. Choose a song to play ")
                         {
-                            Name = playsongsfromCollection.Split(" by ")[0],
-                            Artist = playsongsfromCollection.Split(" by ")[1],
-                            Url = selectedCollection.Songs.First(s => s.songTitle == playsongsfromCollection.Split(" by ")[0]
-                            && s.songArtist == playsongsfromCollection.Split(" by ")[1]).songUrl,
-                        });
+                            string chooseASongPlay = AnsiConsole.Prompt(
+                                new SelectionPrompt<string>()
+                                .Title("[yellow]Select a song to play:[/]")
+                                .AddChoices(songChoicefromCollection));
+
+
+                            PlaySongs player = new PlaySongs();
+
+
+                            // play the selected song from collection
+                            // this code splits the selected string to get song title and artist
+                            // the url is fetched from the database based on the song artist and title
+
+                            player.playSong(new Songs
+                            {
+                                Name = chooseASongPlay.Split(" by ")[0],
+                                Artist = chooseASongPlay.Split(" by ")[1],
+                                Url = selectedCollection.Songs.First(s => s.songTitle == chooseASongPlay.Split(" by ")[0]
+                                && s.songArtist == chooseASongPlay.Split(" by ")[1]).songUrl,
+                            });
+
+
+
+                        } else if (playsongsfromCollection == "2. Play all songs in collection")
+                        {
+                            PlaySongs player = new PlaySongs();
+                            for (var i = 0; i < selectedCollection.Songs.Count; i++)
+                            {
+                                Console.WriteLine($"Playing {selectedCollection.Songs[i].songTitle} by {selectedCollection.Songs[i].songArtist}");
+                                player.playSong(new Songs
+                                {
+                                    Name = selectedCollection.Songs[i].songTitle,
+                                    Artist = selectedCollection.Songs[i].songArtist,
+                                    Url = selectedCollection.Songs[i].songUrl
+                                });
+                            }
+                        } else if (playsongsfromCollection == "3. Return to Main Menu")
+                        {
+                            return;
+                        }
+
+
+                      
 
                     }
 
