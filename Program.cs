@@ -275,8 +275,32 @@ class Playlist
                                     Artist = selectedCollection.Songs[i].songArtist,
                                     Url = selectedCollection.Songs[i].songUrl
                                 });
+
+                                if(i + 1 >= selectedCollection.Songs.Count)
+                                {
+                                    Console.WriteLine("End of collection reached.");
+                                    break;
+                                }
+
+                                string continueChoice = AnsiConsole.Prompt(
+                                    new SelectionPrompt<string>()
+                                    .Title("[green]Do you want to skip this song?[/]")
+                                    .AddChoices("Yes", "No")
+                                    );
+
+                                if (continueChoice == "Yes")
+                                {
+                                    if (i + 1 < selectedCollection.Songs.Count)
+                                    {
+                                        Console.WriteLine("Skipping to the next song...");
+                                        continue;
+
+                                    }
+                                }
+
                             }
-                        } else if (playsongsfromCollection == "3. Return to Main Menu")
+                        }
+                        else if (playsongsfromCollection == "3. Return to Main Menu")
                         {
                             return;
                         }
