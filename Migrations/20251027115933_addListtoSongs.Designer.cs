@@ -2,6 +2,7 @@
 using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MusicPlayer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251027115933_addListtoSongs")]
+    partial class addListtoSongs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -20,21 +23,6 @@ namespace MusicPlayer.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("CollectionSong", b =>
-                {
-                    b.Property<int>("CollectionsCollectionId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SongsSongId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("CollectionsCollectionId", "SongsSongId");
-
-                    b.HasIndex("SongsSongId");
-
-                    b.ToTable("SongCollections", (string)null);
-                });
 
             modelBuilder.Entity("Models.Collection", b =>
                 {
@@ -80,22 +68,23 @@ namespace MusicPlayer.Migrations
 
                     b.HasKey("SongId");
 
+                    b.HasIndex("CollectionId");
+
                     b.ToTable("Songs");
                 });
 
-            modelBuilder.Entity("CollectionSong", b =>
+            modelBuilder.Entity("Models.Song", b =>
                 {
-                    b.HasOne("Models.Collection", null)
-                        .WithMany()
-                        .HasForeignKey("CollectionsCollectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("Models.Collection", "Collection")
+                        .WithMany("Songs")
+                        .HasForeignKey("CollectionId");
 
-                    b.HasOne("Models.Song", null)
-                        .WithMany()
-                        .HasForeignKey("SongsSongId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Collection");
+                });
+
+            modelBuilder.Entity("Models.Collection", b =>
+                {
+                    b.Navigation("Songs");
                 });
 #pragma warning restore 612, 618
         }

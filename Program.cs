@@ -44,7 +44,7 @@ class MusicChoices
     }
 }
 
- class Songs
+class Songs
 {
     private string songName;
     private Songs songNameChoice;
@@ -185,7 +185,7 @@ class Playlist
                     .ToList();
 
                 var table = new Table();
-                
+
                 table.AddColumn(new TableColumn("Collection ID").Centered());
                 table.AddColumn(new TableColumn("Collection Name").Centered());
                 table.AddColumn(new TableColumn("Number of Songs").Centered());
@@ -210,17 +210,17 @@ class Playlist
 
                 var selectedCollection = collections.FirstOrDefault(c => c.CollectionName == viewCollection);
 
-                if(selectedCollection != null)
+                if (selectedCollection != null)
                 {
-                    if(selectedCollection.Songs.Count == 0)
+                    if (selectedCollection.Songs.Count == 0)
                     {
                         Console.WriteLine("No songs in this collection yet. ");
                         Console.WriteLine("Do you want to add songs to this collection?");
-                    } 
+                    }
                     else
                     {
-                       AnsiConsole.Write( new Markup($"[underline yellow] {selectedCollection.CollectionName}[/]"));
-                       Console.WriteLine("\n");
+                        AnsiConsole.Write(new Markup($"[underline yellow] {selectedCollection.CollectionName}[/]"));
+                        Console.WriteLine("\n");
 
                         foreach (var song in selectedCollection.Songs)
                         {
@@ -263,7 +263,8 @@ class Playlist
 
 
 
-                        } else if (playsongsfromCollection == "2. Play all songs in collection")
+                        }
+                        else if (playsongsfromCollection == "2. Play all songs in collection")
                         {
                             PlaySongs player = new PlaySongs();
                             for (var i = 0; i < selectedCollection.Songs.Count; i++)
@@ -276,7 +277,7 @@ class Playlist
                                     Url = selectedCollection.Songs[i].songUrl
                                 });
 
-                                if(i + 1 >= selectedCollection.Songs.Count)
+                                if (i + 1 >= selectedCollection.Songs.Count)
                                 {
                                     Console.WriteLine("End of collection reached.");
                                     break;
@@ -306,17 +307,18 @@ class Playlist
                         }
 
 
-                      
+
 
                     }
 
-                } else
+                }
+                else
                 {
                     Console.WriteLine("Collection not found.");
                     return;
                 }
 
-                    break;
+                break;
 
 
             case "3. Return to Main Menu":
@@ -327,16 +329,16 @@ class Playlist
             default:
                 Console.WriteLine("Invalid Choice! Enter a valid choice ");
                 break;
-              
 
-        }
-            
-        
 
         }
 
 
-    
+
+    }
+
+
+
 
     // Add song into playlist
     public void AddSong(Songs song)
@@ -357,7 +359,7 @@ class Playlist
         using JsonDocument doc = JsonDocument.Parse(response);
         JsonElement root = doc.RootElement.GetProperty("results");
 
-        if(root.GetArrayLength() == 0)
+        if (root.GetArrayLength() == 0)
         {
             Console.WriteLine($"No songs found for {artistName}");
             return;
@@ -365,7 +367,7 @@ class Playlist
 
         List<Songs> artistResult = new List<Songs>();
 
-        foreach(JsonElement track in root.EnumerateArray())
+        foreach (JsonElement track in root.EnumerateArray())
         {
             artistResult.Add(new Songs
             {
@@ -373,14 +375,14 @@ class Playlist
                 Artist = track.GetProperty("artist_name").GetString(),
                 Url = track.GetProperty("audio").GetString()
 
-                
+
             });
         }
 
         Songs chosenArtistSongs = AnsiConsole.Prompt(
             new SelectionPrompt<Songs>()
             .Title("[yellow]Choose a song to add from " + artistName + ":[/]")
-            .UseConverter(s=>$"{s.Name} by {s.Artist}")
+            .UseConverter(s => $"{s.Name} by {s.Artist}")
             .AddChoices(artistResult));
 
 
@@ -390,10 +392,10 @@ class Playlist
 
 
 
-        
 
 
-        
+
+
 
 
     }
@@ -453,7 +455,7 @@ class PlaySongs
         "4. Download song" ,
         "5. Return to Main Menu"
     };
-    
+
 
     public void playSong(Songs song)
     {
@@ -477,18 +479,18 @@ class PlaySongs
 
             var app = new AppDbContext();
 
-            if(app.Songs.Any(s => s.songTitle == song.Name && s.songArtist == song.Artist))
+            if (app.Songs.Any(s => s.songTitle == song.Name && s.songArtist == song.Artist))
             {
                 while (true)
                 {
-                  string settingChoice = AnsiConsole.Prompt(
-                  new SelectionPrompt<string>()
-                  .Title("[yellow]Settings:[/]")
-                  .AddChoices("1. Add to Playlist" , "2. Delete from savelist" , "3. Pause" , "4. Resume" , "5. Download song" , "6. Return to Main Menu"));
+                    string settingChoice = AnsiConsole.Prompt(
+                    new SelectionPrompt<string>()
+                    .Title("[yellow]Settings:[/]")
+                    .AddChoices("1. Add to Playlist", "2. Delete from savelist", "3. Pause", "4. Resume", "5. Download song", "6. Return to Main Menu"));
 
                     if (settingChoice == "1. Add to Playlist")
                     {
-                        var playlists = app.Collections.ToList();
+                        var playlists = app.Collections.Include(c=> c.Songs).ToList();
 
                         Console.WriteLine("Select a playlist to save your song!");
                         string playlistname = AnsiConsole.Prompt(
@@ -496,19 +498,18 @@ class PlaySongs
                             .AddChoices(playlists.Select(p => p.CollectionName)));
 
 
-                       // matching the playlist name to collection name from db //
+                        // matching the playlist name to collection name from db //
                         var selectedPlaylist = playlists.FirstOrDefault(p => p.CollectionName == playlistname);
 
-                     // matching the song displayed and the artist to the data from db //
+                        // matching the song displayed and the artist to the data from db //
                         var currentSong = app.Songs.FirstOrDefault(s => s.songTitle == song.Name && s.songArtist == song.Artist);
 
-                     //  checks if the playlist and current song is empty before
-                        if(selectedPlaylist != null && currentSong != null)
+                        //  checks if the playlist and current song is empty before
+                        if (selectedPlaylist != null && currentSong != null)
                         {
-                            if(!selectedPlaylist.Songs.Any(s => s.SongId == currentSong.SongId))
+                            if (!selectedPlaylist.Songs.Any(s => s.SongId == currentSong.SongId))
                             {
                                 selectedPlaylist.Songs.Add(currentSong);
-                                currentSong.CollectionId = selectedPlaylist.CollectionId;
 
                                 app.SaveChanges();
                                 AnsiConsole.MarkupLine($"[green]✅ '{currentSong.songTitle}' added to '{selectedPlaylist.CollectionName}'![/]");
@@ -534,7 +535,8 @@ class PlaySongs
 
 
 
-                    } else if (settingChoice == "2. Delete from savelist")
+                    }
+                    else if (settingChoice == "2. Delete from savelist")
                     {
                         var songToDelete = app.Songs.FirstOrDefault(s => s.songTitle == song.Name && s.songArtist == song.Artist && s.songUrl == song.Url);
                         if (songToDelete != null)
@@ -545,8 +547,9 @@ class PlaySongs
 
                         }
 
-                            
-                    } else if (settingChoice == "3. Pause")
+
+                    }
+                    else if (settingChoice == "3. Pause")
                     {
                         outputDevice.Pause();
                         Console.WriteLine("Song is paused. Press any key to resume...");
@@ -571,13 +574,14 @@ class PlaySongs
                         return;
                     }
 
-                        Console.WriteLine("Press 'S'  open settings or choose again...");
+                    Console.WriteLine("Press 'S'  open settings or choose again...");
                     if (Console.ReadKey(true).Key == ConsoleKey.Escape)
                     {
                         break;
                     }
                 }
-            } else
+            }
+            else
             {
                 while (true)
                 {
@@ -606,7 +610,7 @@ class PlaySongs
                         {
                             db.Songs.Add(newSong);
                             db.SaveChanges();
-                            
+
                         }
 
                         Console.WriteLine($" Song '{newSong.songTitle}' added to the database!");
@@ -640,7 +644,7 @@ class PlaySongs
                         return;
                     }
 
-                        Console.WriteLine("Press 'S'  open settings or choose again...");
+                    Console.WriteLine("Press 'S'  open settings or choose again...");
                     if (Console.ReadKey(true).Key == ConsoleKey.Escape)
                     {
                         break;
@@ -665,11 +669,12 @@ class DownloadManager
 
     public async Task DownloadSong(Songs song)
     {
-        if(song == null || string.IsNullOrEmpty(song.Url))
+        if (song == null || string.IsNullOrEmpty(song.Url))
         {
             Console.WriteLine("No songs selected or URL is invalid.");
             return;
-        } else
+        }
+        else
         {
             string filePath = songProcess.GetLocalPath(song);
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));
@@ -677,7 +682,7 @@ class DownloadManager
             Console.WriteLine($"Downloading {song.Name} by {song.Artist}");
 
             using var httpClient = new HttpClient();
-            using var response = await httpClient.GetAsync(song.Url , HttpCompletionOption.ResponseHeadersRead);
+            using var response = await httpClient.GetAsync(song.Url, HttpCompletionOption.ResponseHeadersRead);
 
             response.EnsureSuccessStatusCode();
 
@@ -693,7 +698,7 @@ class DownloadManager
 
             using (var db = new AppDbContext())
             {
-               var existing = db.Songs.FirstOrDefault(s => s.songTitle == song.Name && s.songArtist == song.Artist);
+                var existing = db.Songs.FirstOrDefault(s => s.songTitle == song.Name && s.songArtist == song.Artist);
 
                 if (existing != null)
                 {
@@ -702,7 +707,7 @@ class DownloadManager
                     db.SaveChanges();
                     Console.WriteLine($"Song '{existing.songTitle}' download status updated in database.");
                 }
-                
+
             }
 
 
@@ -737,7 +742,7 @@ class MusicInput
         //====================== using Spectre.Console to display title ===========================//
         var fontPath = Path.Combine("fonts", "alligator2.flf");
         var font = FigletFont.Load(fontPath);
-        string[] songSearchChoice = { "1. Browse", "2. Search from saved list" , "3. Return to Main Menu"};
+        string[] songSearchChoice = { "1. Browse", "2. Search from saved list", "3. Return to Main Menu" };
 
 
 
@@ -790,17 +795,18 @@ class MusicInput
                         player.playSong(songs.returnPlaySongs());
 
                         break;
-                    } else if (songsInput == "2. Search from saved list")
+                    }
+                    else if (songsInput == "2. Search from saved list")
                     {
                         AnsiConsole.Clear();
                         AnsiConsole.Write(new FigletText(font, "Search Songs")
                             .Centered().Color(Color.Yellow));
 
-                    // fetch songs from database
+                        // fetch songs from database
 
                         var fetchSong = new List<Song>();
 
-                        using ( var db = new AppDbContext())
+                        using (var db = new AppDbContext())
                         {
 
                             // fetched song list from database
@@ -834,40 +840,41 @@ class MusicInput
 
                             Console.WriteLine("\n");
 
-                        } 
+                        }
 
-                        
+
                         break;
 
-                    } else if (songsInput == "3. Return to Main Menu")
+                    }
+                    else if (songsInput == "3. Return to Main Menu")
                     {
                         break;
                     }
-                        break;
+                    break;
 
 
 
                 case "2. Playlists":
-                            AnsiConsole.Clear();
-                            AnsiConsole.Write(new FigletText(font, "Playlist")
-                             .Centered().Color(Color.Purple));
-                            Console.WriteLine("\n");
-                            Playlist playlist = new Playlist();
+                    AnsiConsole.Clear();
+                    AnsiConsole.Write(new FigletText(font, "Playlist")
+                     .Centered().Color(Color.Purple));
+                    Console.WriteLine("\n");
+                    Playlist playlist = new Playlist();
 
-                            // Show playlist
-                            playlist.ShowPlaylist();
-                            
-                            
-                            break;
+                    // Show playlist
+                    playlist.ShowPlaylist();
+
+
+                    break;
 
                 case "3. Search by Artists":
-                            AnsiConsole.Clear();
-                            AnsiConsole.Write(new FigletText(font, "Search by Artists")
-                           .Centered().Color(Color.Blue1));
+                    AnsiConsole.Clear();
+                    AnsiConsole.Write(new FigletText(font, "Search by Artists")
+                   .Centered().Color(Color.Blue1));
 
-                            Console.WriteLine("\n");
-                            while (true)
-                      {
+                    Console.WriteLine("\n");
+                    while (true)
+                    {
                         AnsiConsole.WriteLine("Enter artist name to search: ");
                         string artistInput = Console.ReadLine();
                         Playlist artistplay = new Playlist();
@@ -880,36 +887,37 @@ class MusicInput
                         if (continueChoice == "No")
                         {
                             break;
-                        } 
+                        }
                         else if (continueChoice == "Yes")
                         {
                             AnsiConsole.Clear();
                             continue;
                         }
                     }
-                           
-                            
-                            break;
 
 
-                        default:
-                            Console.WriteLine("Invalid choice. Please try again.");
+                    break;
 
-                            break;
 
-                        }
+                default:
+                    Console.WriteLine("Invalid choice. Please try again.");
 
-        // restart or exit program //
+                    break;
+
+            }
+
+            // restart or exit program //
             string restartProgram = AnsiConsole.Prompt(
       new SelectionPrompt<string>()
       .Title("[green]Return to main menu?[/]")
-      .AddChoices("Yes" , "No"));
+      .AddChoices("Yes", "No"));
 
             if (restartProgram == "No")
             {
                 Console.WriteLine("Exiting program. Goodbye!");
                 break;
-            } else if (restartProgram == "Yes")
+            }
+            else if (restartProgram == "Yes")
             {
                 AnsiConsole.Clear();
                 continue;
