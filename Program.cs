@@ -457,7 +457,7 @@ class PlaySongs
     };
 
 
-    public void playSong(Songs song)
+    public async Task playSong(Songs song)
     {
         if (song == null || string.IsNullOrEmpty(song.Url))
         {
@@ -472,17 +472,54 @@ class PlaySongs
 
             using var audioFile = new NAudio.Wave.AudioFileReader(tempFile);
             using var outputDevice = new NAudio.Wave.WaveOutEvent();
+         
+          
+
             outputDevice.Init(audioFile);
             outputDevice.Play();
+            AnsiConsole.Clear();
+            AnsiConsole.MarkupLine($"[green] >> Now Playing:[/] [bold yellow]{song.Name}[/]");
+            AnsiConsole.MarkupLine($"[green] >> Artist: [/] [bold yellow]{song.Artist}[/] ");
 
-            Console.WriteLine("🎵 Now playing: " + song.Name + " by " + song.Artist);
+           
 
             var app = new AppDbContext();
 
+
+            /*   var totalTime = audioFile.TotalTime;
+
+             // Start progress bar in a background task
+           var progressTask = Task.Run(async () => {
+                 while (outputDevice.PlaybackState == NAudio.Wave.PlaybackState.Playing)
+                 {
+                     AnsiConsole.Clear();
+                     var currentTime = audioFile.CurrentTime;
+                     double progress = currentTime.TotalSeconds / totalTime.TotalSeconds;
+                     int barLength = 20;
+                     int filled = (int)(progress * barLength);
+                     string bar = new string('█', filled) + new string('-', barLength - filled);
+                     Console.SetCursorPosition(0, Console.CursorTop);
+                     Console.WriteLine($"▶️ {song.Name} [{bar}] {progress * 100:F0}% ({currentTime:mm\\:ss}/{totalTime:mm\\:ss})");
+
+                     Thread.Sleep(1000);
+                 }
+             }); */
+
+
+
+
+
+
+
             if (app.Songs.Any(s => s.songTitle == song.Name && s.songArtist == song.Artist))
             {
+               
                 while (true)
                 {
+                   
+                    // Clear current console line and reprint progress
+                   
+                    Console.WriteLine("\n");
                     string settingChoice = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
                     .Title("[yellow]Settings:[/]")
