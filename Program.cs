@@ -230,7 +230,7 @@ class Playlist
                         var songChoicefromCollection = selectedCollection.Songs
                             .Select(s => $"{s.songTitle} by {s.songArtist}").ToList();
 
-                        string[] songplayFromCollection = { "1. Choose a song to play ", "2. Play all songs in collection", "3. Return to Main Menu" };
+                        string[] songplayFromCollection = { "1. Choose a song to play ", "2. Play all songs in collection", "3. Return to Main Menu" , "4. Delete songs" };
 
                         string playsongsfromCollection = AnsiConsole.Prompt(
                             new SelectionPrompt<string>()
@@ -304,6 +304,44 @@ class Playlist
                         else if (playsongsfromCollection == "3. Return to Main Menu")
                         {
                             return;
+                        }
+
+                        else if (playsongsfromCollection == "4. Delete songs")
+                        {
+                            string songToDelete = AnsiConsole.Prompt(
+                                new SelectionPrompt<string>()
+                                .Title("[yellow]Select a song to delete from this collection:[/]")
+                                .AddChoices(songChoicefromCollection)
+                                );
+
+
+
+
+                                using ( var db = new AppDbContext())
+                                {
+
+                                var collectionsWithSongs = db.Collections.Include(c => c.Songs).FirstOrDefault(c => c.CollectionId == selectedCollection.CollectionId);
+
+                                var deleteSong = collectionsWithSongs.Songs.FirstOrDefault(s => s.songTitle == songToDelete.Split(" by ")[0]);
+
+                                if (deleteSong != null)
+                                {
+                                    collectionsWithSongs.Songs.Remove(deleteSong);
+
+                                    db.SaveChanges();
+                                    Console.WriteLine($"{deleteSong.songTitle} has been removed from {selectedCollection.CollectionName}.");
+                                    break;
+                                }
+                                
+                                else
+                                {
+                                    Console.WriteLine("Song not found in the collection!.");
+                                    return;
+                                }
+                                }
+                            
+
+                                
                         }
 
 
