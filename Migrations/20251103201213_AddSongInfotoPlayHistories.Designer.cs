@@ -3,6 +3,7 @@ using System;
 using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MusicPlayer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251103201213_AddSongInfotoPlayHistories")]
+    partial class AddSongInfotoPlayHistories
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,6 +64,9 @@ namespace MusicPlayer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("playHistoryId"));
 
+                    b.Property<int?>("SongId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("playedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -77,6 +83,8 @@ namespace MusicPlayer.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("playHistoryId");
+
+                    b.HasIndex("SongId");
 
                     b.ToTable("PlayHistories");
                 });
@@ -122,6 +130,15 @@ namespace MusicPlayer.Migrations
                         .HasForeignKey("SongsSongId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Models.PlayHistory", b =>
+                {
+                    b.HasOne("Models.Song", "Song")
+                        .WithMany()
+                        .HasForeignKey("SongId");
+
+                    b.Navigation("Song");
                 });
 #pragma warning restore 612, 618
         }

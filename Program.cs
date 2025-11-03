@@ -549,9 +549,25 @@ class PlaySongs
                  }
              }); */
 
-           
 
 
+
+
+            // Clear current console line and reprint progress
+            app.PlayHistories.Add(new PlayHistory
+            {
+                songArtist = song.Artist,
+                songTitle = song.Name,
+                songUrl = song.Url,
+            });
+
+            app.SaveChanges();
+
+            Console.WriteLine("Your logs:");
+            for (var i = 0; i < app.PlayHistories.Count(); i++)
+            {
+                Console.WriteLine($"{app.PlayHistories.ToList()[i].playHistoryId} - {app.PlayHistories.ToList()[i].songTitle} by {app.PlayHistories.ToList()[i].songArtist} at {app.PlayHistories.ToList()[i].playedAt}");
+            }
 
 
 
@@ -559,31 +575,13 @@ class PlaySongs
 
             if (app.Songs.Any(s => s.songTitle == song.Name && s.songArtist == song.Artist))
             {
-
-                var matchedSong = app.Songs.FirstOrDefault(s =>
-            s.songTitle == song.Name && s.songArtist == song.Artist);
-
-                if (matchedSong != null)
-                {
-                    app.PlayHistories.Add(new PlayHistory
-                    {
-                        SongId = matchedSong.SongId,
-                        playedAt = DateTime.Now
-                    });
-                    app.SaveChanges();
-                    Console.WriteLine($"✅ Play history added for {song.Name}");
-                }
-                else
-                {
-                    Console.WriteLine("⚠️ No matching song found in database. Skipping history log.");
-                }
-
+               
                 while (true)
                 {
 
-                    // Clear current console line and reprint progress
+                  
 
-                   
+                    
 
 
                     Console.WriteLine("\n");
