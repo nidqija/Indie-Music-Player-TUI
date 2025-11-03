@@ -25,7 +25,7 @@ using MusicPlayer;
 // class to display menu choices
 class MusicChoices
 {
-    private string[] menuChoices = { "1. Search Songs", "2. Playlists", "3. Search by Artists" };
+    private string[] menuChoices = { "1. Search Songs", "2. Playlists", "3. Search by Artists" , "4. View Song Logs" };
     private string choice;
 
     public void printChoices()
@@ -997,6 +997,21 @@ class MusicInput
                         }
                     }
 
+
+                    break;
+
+                case "4. View Song Logs":
+                    AnsiConsole.Clear();
+                    Console.WriteLine("this is song logs");
+                    using (var db = new AppDbContext())
+                    {
+                        var playLogs = db.PlayHistories.ToList();
+                        Console.WriteLine("Song Logs: ");
+                        for ( var i = 0; i < playLogs.Count(); i++)
+                        {
+                            Console.WriteLine($"{playLogs[i].playHistoryId} - {playLogs[i].songTitle}");
+                        }
+                    }
 
                     break;
 
