@@ -24,6 +24,17 @@
 
     }
 
+    public class PlayHistory
+    {
+        public int playHistoryId { get; set; }
+        public int SongId { get; set; }
+        public DateTime playedAt { get; set; }
+        public Song? Song { get; set; }
+    }
+
+
+    
+
    
 
 }

@@ -9,6 +9,9 @@ namespace Data
         public DbSet<Song> Songs { get; set; }
         public DbSet<Collection> Collections { get; set; }
 
+        public DbSet<PlayHistory> PlayHistories { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // optional — EF Core can infer this automatically

@@ -549,6 +549,8 @@ class PlaySongs
                  }
              }); */
 
+           
+
 
 
 
@@ -557,12 +559,33 @@ class PlaySongs
 
             if (app.Songs.Any(s => s.songTitle == song.Name && s.songArtist == song.Artist))
             {
-               
+
+                var matchedSong = app.Songs.FirstOrDefault(s =>
+            s.songTitle == song.Name && s.songArtist == song.Artist);
+
+                if (matchedSong != null)
+                {
+                    app.PlayHistories.Add(new PlayHistory
+                    {
+                        SongId = matchedSong.SongId,
+                        playedAt = DateTime.Now
+                    });
+                    app.SaveChanges();
+                    Console.WriteLine($"✅ Play history added for {song.Name}");
+                }
+                else
+                {
+                    Console.WriteLine("⚠️ No matching song found in database. Skipping history log.");
+                }
+
                 while (true)
                 {
-                   
+
                     // Clear current console line and reprint progress
+
                    
+
+
                     Console.WriteLine("\n");
                     string settingChoice = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
