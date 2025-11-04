@@ -581,9 +581,6 @@ class PlaySongs
 
                   
 
-                    
-
-
                     Console.WriteLine("\n");
                     string settingChoice = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
@@ -1002,15 +999,35 @@ class MusicInput
 
                 case "4. View Song Logs":
                     AnsiConsole.Clear();
-                    Console.WriteLine("this is song logs");
                     using (var db = new AppDbContext())
                     {
                         var playLogs = db.PlayHistories.ToList();
-                        Console.WriteLine("Song Logs: ");
+
+                        AnsiConsole.Write(new Markup("[bold red]Music Logs:[/] "));
+                        Console.WriteLine("\n");
+
+                        var table = new Table();
+
+                        table.AddColumn(new TableColumn("ID").Centered());
+                        table.AddColumn(new TableColumn("Song Title").Centered());
+                        table.AddColumn(new TableColumn("Artist").Centered());
+                        table.AddColumn(new TableColumn("Played At").Centered());
+
+
                         for ( var i = 0; i < playLogs.Count(); i++)
                         {
-                            Console.WriteLine($"{playLogs[i].playHistoryId} - {playLogs[i].songTitle}");
+
+
+                            table.AddRow(
+                                new Text(playLogs[i].playHistoryId.ToString()),
+                                new Text(playLogs[i].songTitle),
+                                new Text(playLogs[i].songArtist),
+                                new Text(playLogs[i].playedAt.ToString()));
+
                         }
+                        AnsiConsole.Write(table);
+
+                        Console.WriteLine("\n");
                     }
 
                     break;
