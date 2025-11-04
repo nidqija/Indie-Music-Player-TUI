@@ -348,10 +348,6 @@ class Playlist
                             return;
                         }
 
-                       
-
-
-
 
                     }
 
@@ -433,12 +429,6 @@ class Playlist
         PlaySongs player = new PlaySongs();
 
         player.playSong(chosenArtistSongs);
-
-
-
-
-
-
 
 
 
@@ -999,6 +989,7 @@ class MusicInput
 
                 case "4. View Song Logs":
                     AnsiConsole.Clear();
+                    string[] LogsMenu = { "1. Play History", "2. Return to Main Menu" };
                     using (var db = new AppDbContext())
                     {
                         var playLogs = db.PlayHistories.ToList();
@@ -1028,6 +1019,39 @@ class MusicInput
                         AnsiConsole.Write(table);
 
                         Console.WriteLine("\n");
+
+
+                        // print logs menu to either play history or return to main menu //
+
+                        string LogsOptions = AnsiConsole.Prompt(
+                            new SelectionPrompt<string>()
+                            .AddChoices(LogsMenu));
+
+                        if(LogsOptions == "1. Play History")
+                        {
+                            var playLogsDetails = db.PlayHistories.ToList();
+                            string logChoice = AnsiConsole.Prompt(
+                                new SelectionPrompt<string>()
+                                .AddChoices(playLogsDetails.Select(l => $"{l.songTitle} by {l.songArtist}")));
+
+                            var selectedLog = playLogsDetails.FirstOrDefault(l => $"{l.songTitle} by {l.songArtist}" == logChoice);
+                             
+                            if ( selectedLog != null)
+                            {
+                                PlaySongs player = new PlaySongs();
+                                player.playSong(new Songs
+                                {
+                                   Name = selectedLog.songTitle,
+                                   Artist = selectedLog.songArtist,
+                                   Url = selectedLog.songUrl
+                                });
+                            }
+
+                        }
+                        else if (LogsOptions == "2. Return to Main Menu")
+                        {
+                            return;
+                        }
                     }
 
                     break;
