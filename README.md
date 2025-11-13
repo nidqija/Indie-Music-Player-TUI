@@ -69,4 +69,22 @@ The app features a rich interactive interface, song logs, artist search, and pla
 
 5. You’ll now see the main interactive console menu appear.
 
+---
+
+## 🐳 Containerization (Using Podman)
+You can run MusicInput Station in a container to avoid installing dependencies locally. This is recommended for contributors or developers who want a hassle-free setup.
+
+
+1. **Build the Container Image**
+   ```bash
+   podman build -t musicinput-station .
+
+2. **Run the Container**
+   ```bash
+   podman run -it --env-file .env musicinput-station
+
+
+
+
+
 
