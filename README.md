@@ -94,5 +94,18 @@ You can run MusicInput Station in a container to avoid installing dependencies l
   podman build --no-cache -t musicinput-station .
 
 
+---
+
+## 🤝 Contributing
+
+This project is **open-source** and welcomes contributions!  
+
+- Feel free to **fork**, **create issues**, or **submit pull requests**.  
+- You can add new features, improve the **console UI**, or enhance **containerization**.  
+- Make sure to **test changes locally** or inside the **Podman container**.  
+
+Enjoy building and sharing music with **MusicInput Station**! 🎶
+
+
 
 
