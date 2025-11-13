@@ -52,3 +52,21 @@ The app features a rich interactive interface, song logs, artist search, and pla
    git clone https://github.com/your-username/musicinput-station.git
    cd musicinput-station
 
+2. **🧩 Step 2 — Create Environment File**
+   Create a `.env` file in the root directory with the following content:
+   ```bash
+   JAMENDO_CLIENT_ID=your_jamendo_api_client_id
+
+3. **🧩 Step 3 — Install Dependencies**
+   Restore dependencies using:
+   ```bash
+   dotnet restore
+
+4. **🧩 Step 4 — Run the Application**
+   Run the project:
+   ```bash
+   dotnet run
+
+5. You’ll now see the main interactive console menu appear.
+
+
