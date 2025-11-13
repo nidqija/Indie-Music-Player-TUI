@@ -84,6 +84,14 @@ You can run MusicInput Station in a container to avoid installing dependencies l
    podman run -it --env-file .env musicinput-station
 
 
+### 📝 Notes
+
+- Uses a **Linux-based container**, works on WSL, Linux, and macOS.  
+- No need to install **.NET**, **NAudio**, or **EF Core** on your host machine.  
+- Container keeps your environment **consistent for all contributors**.  
+- To rebuild after changes:
+  ```bash
+  podman build --no-cache -t musicinput-station .
 
 
 
