@@ -37,7 +37,7 @@ The app features a rich interactive interface, song logs, artist search, and pla
 |------------|-------------|
 | Language | C# (.NET 8 / .NET 6) |
 | API | [Jamendo Music API](https://developer.jamendo.com/v3.0) |
-| Database | SQLite with Entity Framework Core |
+| Database | postgreSQL with Entity Framework Core |
 | Console UI | Spectre.Console |
 | Audio Playback | NAudio |
 | Configuration | DotNetEnv |
